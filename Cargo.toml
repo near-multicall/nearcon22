@@ -1,0 +1,11 @@
+[workspace]
+members = [
+  "core",
+  "methods",
+  "web/server",
+]
+
+exclude = [
+  "contract",
+  "web/client",
+]
