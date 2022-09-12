@@ -2,5 +2,9 @@
   "name": "drop-ui",
   "version": "1.0.0",
   "main": "index.js",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "build": "wasm-pack build ./merkle --target nodejs --release",
+    "start": "node index.js"
+  }
 }

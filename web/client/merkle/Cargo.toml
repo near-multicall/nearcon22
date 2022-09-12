@@ -1,0 +1,18 @@
+[package]
+name = "drop-ui-merkle"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+console_error_panic_hook = { version = "0.1.7" }
+serde = { version = "1.0", features = ["derive"] }
+wasm-bindgen = { version = "0.2", features = ["serde-serialize"] }
+sha2 = { version = "0.10.5" }
+base64ct = { version = "1.5.2", features = ["alloc"] }
+merkle_light = { version = "0.4.0" }
+merkle_light_derive = { version = "0.4.0" }
