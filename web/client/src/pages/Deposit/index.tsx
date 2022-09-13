@@ -101,6 +101,12 @@ export default function Deposit() {
                         size="small"
                         sx={{ marginBottom: "10px" }}
                       />
+                      <Typography>
+                        Current balances:
+                      </Typography>
+                      <Typography sx={{ paddingBottom: "10px", opacity: "0.75" }}>
+                        {formValues.token}: {tokenBalance ?? 0}
+                      </Typography>
                       <TextField
                         label="Token Amount"
                         id="token-amount"
@@ -111,11 +117,6 @@ export default function Deposit() {
                         size="small"
                         sx={{ marginBottom: "10px" }}
                       />
-                      <Typography sx={{paddingBottom: "10px"}}>Current balances:</Typography>
-
-                      <Typography>
-                        {formValues.token}: {tokenBalance}
-                      </Typography>
                     </Box>
                   </Grid>
                 </Grid>
