@@ -1,19 +1,25 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import ReactDOM from "react-dom";
+import { HashRouter } from "react-router-dom";
+import App from "./App";
+import { CssBaseline, ThemeProvider } from "@mui/material";
+import { theme } from "./theme";
+import { WalletSelectorContextProvider } from "./contexts/walletSelectorContext";
+import "@near-wallet-selector/modal-ui/styles.css";
+import * as buffer from "buffer";
 
-const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
-);
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+// issue of near-api-js
+// https://github.com/near/near-api-js/issues/757
+(window as any).Buffer = buffer.Buffer;
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+
+ReactDOM.render(
+  <ThemeProvider theme={theme}>
+    <CssBaseline />
+    <WalletSelectorContextProvider>
+      <HashRouter>
+        <App />
+      </HashRouter>
+    </WalletSelectorContextProvider>
+  </ThemeProvider>,
+  document.querySelector("#root")
+);

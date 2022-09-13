@@ -3,6 +3,7 @@ use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::serde::{Deserialize, Serialize};
 use near_sdk::collections::{UnorderedMap};
 use near_sdk::{near_bindgen, AccountId, BorshStorageKey, PanicOnDefault, env};
+use drop_core::{LeafInfo, Leaves};
 
 #[derive(BorshStorageKey, BorshSerialize)]
 pub(crate) enum StorageKey {
@@ -53,6 +54,30 @@ impl Contract {
         let key = self.airdrops.len();
         self.airdrops.insert(&key, &new_airdrop);
         return key;
+    }
+
+    pub fn validate_proof(amt: String, memo: String, proof: MerkleDropProof) -> bool {
+    
+        // ensure account + amount + memo hashed is in a leaf
+        let mut data = Vec::<LeafInfo>::new();
+        data.push(LeafInfo { addr: env::predecessor_account_id(), amt, memo });
+        let leaf: Leaves = Leaves { data };
+        let tree = leaf.gen_tree();
+        let hash = tree.root();
+    
+        assert(Base64::encode_string(&hash).to_owned() == proof.lemma[0], "proof does not match specifications");
+    
+        // ensure merkle proof is valid
+        let merkle_light_proof = Proof::new(
+            proof.lemma
+                .iter()
+                .map(|l| Base64::decode_vec(l).unwrap().as_slice().try_into().unwrap())
+                .collect(), 
+            proof.path
+        );
+    
+        // ensure merkle root is our merkle root
+        return merkle_light_proof.validate::<Sha256Hasher>();
     }
 
 }
