@@ -20,7 +20,7 @@ use tower_http::trace::TraceLayer;
 use tracing_subscriber::prelude::*;
 
 use drop_core::{Leaves, ZkProofCommit};
-use drop_methods_guest::{PROVEDROP_ID, PROVEDROP_PATH};
+use drop_methods::{PROVEDROP_ID, PROVEDROP_PATH};
 use risc0_zkvm_host::Prover;
 
 #[derive(Deserialize, Serialize)]
@@ -77,7 +77,7 @@ fn do_drop_proof(name: &str, input: Leaves) -> Result<String, risc0_zkvm_host::E
     Ok(base64::encode(bincode::serialize(&receipt).unwrap()))
 }
 
-async fn prove_init(Json(payload): Json<Leaves>) -> impl IntoResponse {
+async fn prove_drop(Json(payload): Json<Leaves>) -> impl IntoResponse {
     let out = match do_drop_proof(PROVEDROP_PATH, payload) {
         Ok(receipt) => receipt,
         Err(_e) => {
