@@ -1,15 +1,18 @@
 import { Box, Card, Grid, Typography, TextField, Button } from "@mui/material";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { AIRDROP_CONTRACT_ADDRESS } from "../../constants/addresses";
-import { tx } from "../../utils/wallet";
+import { useWalletSelector } from "../../contexts/walletSelectorContext";
+import { useTokenBalance } from "../../hooks/useTokenBalance";
+import { tx, view } from "../../utils/wallet";
 
 export default function Deposit() {
-
   const defaultValues = {
     token: "",
-    amount: ""
+    amount: "",
   };
   const [formValues, setFormValues] = useState(defaultValues);
+  const [tokenBalance, setTokenBalance] = useState("...");
+  const { accountId } = useWalletSelector();
 
   const handleSubmit = () => {
     tx(
@@ -18,11 +21,11 @@ export default function Deposit() {
       {
         receiver_id: AIRDROP_CONTRACT_ADDRESS,
         amount: formValues.amount,
-        msg: ""
+        msg: "",
       },
       "300000000000000", // 300 Tgas
       "1"
-    )
+    );
   };
 
   const handleInputChange = (e: { target: { name: any; value: any } }) => {
@@ -32,6 +35,16 @@ export default function Deposit() {
       [name]: value,
     });
   };
+
+  async function getTokenBalance(
+    tokenId: string,
+    accountId: string | undefined | null
+  ) {
+    const tokenBalance = await view(AIRDROP_CONTRACT_ADDRESS, "get_balance", {
+      account_id: accountId,
+    });
+    return Object.fromEntries(tokenBalance);
+  }
 
   return (
     <Box
@@ -76,7 +89,15 @@ export default function Deposit() {
                         name="token"
                         type="string"
                         value={formValues.token}
-                        onChange={handleInputChange}
+                        onChange={(e) => {
+                          handleInputChange(e);
+                          getTokenBalance(e.target.value, accountId).then(
+                            (res) => {
+                              console.log(res);
+                              setTokenBalance(res[e.target.value]);
+                            }
+                          );
+                        }}
                         size="small"
                         sx={{ marginBottom: "10px" }}
                       />
@@ -90,6 +111,11 @@ export default function Deposit() {
                         size="small"
                         sx={{ marginBottom: "10px" }}
                       />
+                      <Typography sx={{paddingBottom: "10px"}}>Max. available balances:</Typography>
+
+                      <Typography>
+                        {formValues.token}: {tokenBalance}
+                      </Typography>
                     </Box>
                   </Grid>
                 </Grid>
@@ -114,5 +140,5 @@ export default function Deposit() {
         </Box>
       </Card>
     </Box>
-  )
+  );
 }
