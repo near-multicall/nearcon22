@@ -59,7 +59,7 @@ async fn main() {
         .layer(TraceLayer::new_for_http())
         .layer(cors);
 
-    let addr = SocketAddr::from((Ipv4Addr::LOCALHOST, 3000));
+    let addr = SocketAddr::from((Ipv4Addr::LOCALHOST, 3001));
     tracing::info!("listening on {}", addr);
     let server = axum::Server::bind(&addr).serve(app.into_make_service());
 
