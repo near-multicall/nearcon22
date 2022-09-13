@@ -1,14 +1,11 @@
 import { useTheme } from "@emotion/react";
 import {
   Box,
-  Button,
   Card,
-  CardActionArea,
   Grid,
   Typography,
 } from "@mui/material";
 import { Link } from "react-router-dom";
-import Create from "../Create";
 
 export default function Home() {
   const theme = useTheme();

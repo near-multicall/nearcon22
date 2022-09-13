@@ -6,7 +6,6 @@
     "drop_merkle.js",
     "drop_merkle.d.ts"
   ],
-  "module": "drop_merkle.js",
-  "types": "drop_merkle.d.ts",
-  "sideEffects": false
+  "main": "drop_merkle.js",
+  "types": "drop_merkle.d.ts"
 }

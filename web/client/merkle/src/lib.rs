@@ -7,7 +7,7 @@ use drop_core::{
     sha256_to_base64_string, 
     MerkleDropTree, 
     MerkleDropProof 
-}
+};
 
 use std::collections::HashMap;
 use wasm_bindgen::prelude::*;

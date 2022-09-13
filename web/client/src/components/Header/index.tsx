@@ -6,10 +6,11 @@ import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import { useTheme } from "@mui/material";
 import { useWalletSelector } from "../../contexts/walletSelectorContext";
-import { useContext } from "react";
+import { routes } from "../../constants/routes";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 
 export default function Header() {
-  const theme = useTheme();
+  const navigate = useNavigate();
 
   const { selector, modal, accountId } = useWalletSelector();
 
@@ -36,9 +37,12 @@ export default function Header() {
             color="inherit"
             aria-label="menu"
             sx={{ mr: 2 }}
+            onClick={() => {
+              navigate(routes.app);
+            }}
           ></IconButton>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Drop
+            NoCap
           </Typography>
           {!selector.isSignedIn() ? (
             <Button
