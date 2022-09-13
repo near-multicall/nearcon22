@@ -87,14 +87,33 @@ export default function Create() {
     });
 
     setArray(array);
+    console.log(makeFile(array));
+    storeFiles(makeFile(array));
     console.log(array);
-    toMerkle(array);
     console.log(array);
     setLoaded(true);
   };
 
-  const toMerkle = (array: object[]) => {
-    const file = window.parse_balance_map({ data: array });
+  async function storeFiles(files: File[]) {
+    const client = makeStorageClient();
+    const cid = await client.put(files);
+    console.log("stored files with cid:", cid);
+    return cid;
+  }
+
+  function makeFile(array: object[]) {
+    const blob = new Blob([JSON.stringify(balanceMap(array))], {
+      type: "application/json",
+    });
+
+    const files = [new File([blob], "merkle.json")];
+    return files;
+  }
+
+  const balanceMap = (array: object[]) => {
+    console.log(array, "hi");
+    console.log(array.map((a) => ({ data: a })));
+    const file = window.parse_balance_map(array.map((a) => ({ data: a })));
     console.log(file);
     return file;
   };
