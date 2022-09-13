@@ -22,7 +22,7 @@ use drop_core::{Leaves, ZkProofCommit, MerkleDropTree};
 risc0_zkvm_guest::entry!(main);
 
 pub fn main() {
-    let my_vec: Vec<u128> = vec![1, 2, 3];
+    let my_vec: [u128] = [1, 2, 3];
     // let balances: Leaves = env::read();
     // sum of all token allocations
     //let drop_sum: u128 = balances.data
