@@ -13,8 +13,8 @@ import { MouseEvent, useState } from "react";
 import { Web3Storage } from "web3.storage";
 import init, { parse_balance_map } from "drop-merkle";
 import { tx } from "../../utils/wallet";
+import { AIRDROP_CONTRACT_ADDRESS } from "../../constants/addresses";
 
-const AIRDROP_CONTRACT_ADDRESS = "dev-1663082207724-65204983285265";
 /* const rust = import("../../pkg/drop_merkle");
 
 rust

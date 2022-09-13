@@ -29,12 +29,7 @@ export default function Claim() {
     },
     [navigate]
   );
-  /* 
-  const handleSubmit = (event: { preventDefault: () => void }) => {
-    event.preventDefault();
-    console.log(formValues);
-  };
- */
+
   return (
     <Box
       display="flex"
