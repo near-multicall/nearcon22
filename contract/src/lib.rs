@@ -63,20 +63,35 @@ impl Contract {
 
     pub fn create_new_airdrop(
         &mut self, 
+        amount: U128,
         token_id: AccountId, 
         ipfs_cid: String, 
         root_hash: String, 
         expiry_date: u64,
         description: String
     ) -> u64 {
+        // validate creator has enough funds
+        let creator = env::predecessor_account_id();
+        let mut token_table = self.balances.get(&creator).unwrap();
+        assert!(token_table.is_some(), "creator does not have funds!");
+        let balance = token_table.get(&token_id).unwrap();
+        assert!(balance.is_some(), "creator did not deposit correct token!");
+        assert!(balance >= amount, "creator does not have enough funds!");
+        
+        // reduce creators balance and give it to the airdrop
+        let new_balance = U128(balance.0 - amount.0);
+        token_table.insert(&token_id, &new_balance);
+        self.balances.insert(&creator, &token_table);
+
         let new_airdrop = Airdrop {
             description,
-            creator: env::predecessor_account_id(),
+            creator,
             token_id,
             ipfs_cid,
             root_hash,
             expiry_date,
-            claimed_users: HashSet::new()
+            claimed_users: HashSet::new(),
+            amount
         };
         let key = self.airdrops.len();
         self.airdrops.insert(&key, &new_airdrop);
@@ -116,15 +131,18 @@ impl Contract {
     }
 
     pub fn claim(&self, airdrop_id: u64, amt: String, memo: String, proof: MerkleDropProof) -> Promise {
+
+        // ensure airdrop with id exists
+        assert!(self.airdrops.get(&airdrop_id).is_some(), "no airdrop with this id!"); 
     
         // ensure account + amount + memo hashed is in a leaf
         let user = env::predecessor_account_id();
         let hash = LeafInfo { addr: user.clone(), amt: amt.clone(), memo: memo.clone() }.to_hash();
-        assert!(Base64::encode_string(&hash).to_owned() == proof.lemma[0], "proof incompatible with claim");
+        assert!(Base64::encode_string(&hash).to_owned() == proof.lemma[0], "proof incompatible with claim!");
     
         // ensure merkle root is our merkle root
         let mut airdrop: Airdrop = self.airdrops.get(&airdrop_id).expect("no airdrop with found!").into();
-        assert!(&airdrop.root_hash == proof.lemma.last().unwrap(), "merkel root does not match the airdrops root hash");
+        assert!(&airdrop.root_hash == proof.lemma.last().unwrap(), "merkel root does not match the airdrops root hash!");
     
         // ensure merkle proof is valid
         let merkle_light_proof = Proof::new(
@@ -134,10 +152,10 @@ impl Contract {
                 .collect(), 
             proof.path
         );
-        assert!(merkle_light_proof.validate::<Sha256Hasher>(), "invalid merkle proof");
+        assert!(merkle_light_proof.validate::<Sha256Hasher>(), "invalid merkle proof!");
 
         // ensure user has not yet claimed the airdrop
-        assert!(!airdrop.claimed_users.contains(&user), "user already claimed airdrop");
+        assert!(!airdrop.claimed_users.contains(&user), "user already claimed airdrop!");
 
         // set user to claimed
         airdrop.claimed_users.insert(user.clone());
@@ -152,7 +170,7 @@ impl Contract {
             GAS_FOR_CLAIM,
         )
         // on error revoke claimed
-        // on success do nothing
+        // on success decrease airdrop amount
         .then(ext_self::claim_callback(
             airdrop_id,
             user.clone(),
@@ -175,11 +193,16 @@ impl Contract {
             env::promise_results_count(),
             1,
             "{}",
-            "expected 1 promise result from claim"
+            "expected 1 promise result from claim!"
         );
         match env::promise_result(0) {
             PromiseResult::NotReady => unreachable!(),
-            PromiseResult::Successful(_) => amount,
+            PromiseResult::Successful(_) => {
+                let airdrop = self.airdrops.get(&airdrop_id).unwrap();
+                airdrop.amount = U128(airdrop.amount.0 - amount.0);
+                self.airdrops.insert(&airdrop_id, &airdrop);
+                amount
+            },
             PromiseResult::Failed => {
                 let mut airdrop: Airdrop = self.airdrops.get(&airdrop_id).expect("no airdrop with found!").into();
                 airdrop.claimed_users.remove(&user);
@@ -199,5 +222,6 @@ pub struct Airdrop {
     ipfs_cid: String,
     root_hash: String,
     expiry_date: u64,
-    claimed_users: HashSet<AccountId>
+    claimed_users: HashSet<AccountId>,
+    amount: U128
 }
