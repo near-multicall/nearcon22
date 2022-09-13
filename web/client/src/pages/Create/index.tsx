@@ -10,9 +10,15 @@ import {
 } from "@mui/material";
 import { MouseEvent, useState } from "react";
 import { Web3Storage } from "web3.storage";
-import init, { parse_balance_map } from "../../pkg/drop_merkle";
+import init, { parse_balance_map } from "drop-merkle";
 /* const rust = import("../../pkg/drop_merkle");
 
+rust
+  .then((m) => {
+    window.parse_balance_map = m.parse_balance_map;
+    console.log("our function was loaded successfully");
+  })
+  .catch(console.error); */
 
 function getAccessToken() {
   return "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDNiOGEyMEY0QTEzMTUyQ2IyNDBFY0ZBY2ZGMUI0NjBhMkYzNkE3MDAiLCJpc3MiOiJ3ZWIzLXN0b3JhZ2UiLCJpYXQiOjE2NjMwNzI1OTM1NDUsIm5hbWUiOiJub19jYXBfZHJvcCJ9.VQZq11WZb4Ck6ieEyQbXODWY_Xj-TJ4S53nK2k-ilo4";
@@ -34,7 +40,9 @@ export default function Create() {
   const [loaded, setLoaded] = useState(false);
   const fileReader = new FileReader();
 
-  init().then(res => { window.parse_balance_map = parse_balance_map });
+  init().then((res) => {
+    window.parse_balance_map = parse_balance_map;
+  });
 
   const handleInputChange = (e: { target: { name: any; value: any } }) => {
     const { name, value } = e.target;
