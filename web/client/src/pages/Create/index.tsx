@@ -3,16 +3,15 @@ import {
   Box,
   Button,
   Card,
-  FormControl,
   FormLabel,
   Grid,
   TextField,
   Typography,
 } from "@mui/material";
-import { MouseEvent, SetStateAction, useState } from "react";
+import { MouseEvent, useState } from "react";
+import { parse_balance_map } from "../../pkg/drop_merkle";
 
 export default function Create() {
-  const theme = useTheme();
 
   const defaultValues = {
     token: "",
@@ -68,8 +67,15 @@ export default function Create() {
     });
 
     setArray(array);
+    toMerkle(array);
     console.log(array);
     setLoaded(true);
+  };
+
+  const toMerkle = (array: object[]) => {
+    const file = parse_balance_map(array);
+    console.log(file);
+    return file;
   };
 
   const headerKeys = ["Receivers", "Amount", "Memo"];
