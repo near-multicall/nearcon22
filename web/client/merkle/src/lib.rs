@@ -1,7 +1,3 @@
-mod merkle;
-
-#[macro_use]
-extern crate merkle_light_derive;
 extern crate console_error_panic_hook;
 
 use drop_core::{

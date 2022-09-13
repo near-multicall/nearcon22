@@ -12,7 +12,3 @@ crate-type = ["cdylib"]
 console_error_panic_hook = { version = "0.1.7" }
 serde = { version = "1.0", features = ["derive"] }
 wasm-bindgen = { version = "0.2", features = ["serde-serialize"] }
-sha2 = { version = "0.10.5" }
-base64ct = { version = "1.5.2", features = ["alloc"] }
-merkle_light = { version = "0.4.0" }
-merkle_light_derive = { version = "0.4.0" }

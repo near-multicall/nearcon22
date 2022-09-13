@@ -1,8 +1,9 @@
+use sha2::Digest;
 use merkle_light::merkle::{MerkleTree};
 use merkle_light_derive::Hashable;
 use serde::{Serialize, Deserialize};
 use std::hash::Hasher;
-use sha2::{Sha256};
+use sha2::Sha256;
 // use risc0_zkvm_guest::{env, sha};
 use merkle_light::hash::Algorithm;
 use merkle_light::proof::Proof;
