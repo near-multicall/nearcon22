@@ -2,7 +2,8 @@ use merkle_light::merkle::{MerkleTree};
 use merkle_light_derive::Hashable;
 use serde::{Serialize, Deserialize};
 use std::hash::Hasher;
-use sha2::{Digest, Sha256};
+use sha2::{Sha256};
+// use risc0_zkvm_guest::{env, sha};
 use merkle_light::hash::Algorithm;
 use merkle_light::proof::Proof;
 use base64ct::{ Base64, Encoding };
@@ -10,9 +11,13 @@ use base64ct::{ Base64, Encoding };
 
 // Sha256 Hash type alias
 pub type Sha256Hash = [u8; 32];
+// TODO: ZK-Sha256 Hash type alias
+// pub type Sha256Hash = [u8; 32];
 
-/// Sha256 implementations of Algorithm abstraction that we use in our integration tests
+// Sha256 implementations of Algorithm abstraction that we use in our integration tests
 pub struct Sha256Hasher(Sha256);
+// TODO: ZK-Sha256 implementations of Algorithm abstraction that we use in our integration tests
+// pub struct ZKSha256Hasher(sha);
 
 // Type for our merkle-drop tree
 pub type MerkleDropTree = MerkleTree<Sha256Hash, Sha256Hasher>;
@@ -20,9 +25,9 @@ pub type MerkleDropTree = MerkleTree<Sha256Hash, Sha256Hasher>;
 #[derive(Serialize, Deserialize)]
 pub struct MerkleDropProof {
     // Sha256Hash encoded as base64 string
-    lemma: Vec<String>,
+    pub lemma: Vec<String>,
     // how to combine hashes in each proof step (left vs. right hash)
-    path: Vec<bool>
+    pub path: Vec<bool>
 }
 
 impl Sha256Hasher {
@@ -90,6 +95,23 @@ pub struct LeafInfo {
     memo: String
 }
 
+impl LeafInfo {
+
+    pub fn to_hash(&self) -> Sha256Hash {
+        let mut data = Vec::<LeafInfo>::new();
+        data.push(LeafInfo { 
+            addr: self.addr.to_owned(), 
+            amt: self.amt.to_owned(), 
+            memo: self.memo.to_owned() 
+        });
+        let leaf: Leaves = Leaves { data };
+        let tree = leaf.gen_tree();
+        tree.root()
+    }
+
+}
+
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Leaves {
     data: Vec<LeafInfo>
 }
@@ -100,4 +122,10 @@ impl Leaves {
         return MerkleTree::from_data(&self.data);
     }
 
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct ZkProofCommit {
+    base64_root_hash: String,
+    token_sum: u128
 }
