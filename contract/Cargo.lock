@@ -199,6 +199,7 @@ dependencies = [
  "base64ct",
  "drop-core",
  "merkle_light",
+ "near-contract-standards",
  "near-sdk",
 ]
 
@@ -305,6 +306,15 @@ dependencies = [
  "merkle_light",
  "quote 0.3.15",
  "syn 0.11.11",
+]
+
+[[package]]
+name = "near-contract-standards"
+version = "3.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e7421d0a5c7aeb57b37a0cf3a71a7aefbbdc7727f9811d9dd86fa55e4f0de4d3"
+dependencies = [
+ "near-sdk",
 ]
 
 [[package]]
