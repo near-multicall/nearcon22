@@ -1,5 +1,5 @@
 [package]
-name = "drop_ui_merkle"
+name = "drop-merkle"
 version = "0.1.0"
 edition = "2021"
 

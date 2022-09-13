@@ -1,5 +1,5 @@
 [package]
-name = "drop_contract"
+name = "drop-contract"
 version = "0.1.0"
 edition = "2021"
 
@@ -8,6 +8,7 @@ crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 near-sdk = "3.1"
+drop-core = { path="../core" }
 
 [profile.release]
 codegen-units = 1

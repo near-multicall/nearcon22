@@ -20,9 +20,9 @@ pub type MerkleDropTree = MerkleTree<Sha256Hash, Sha256Hasher>;
 #[derive(Serialize, Deserialize)]
 pub struct MerkleDropProof {
     // Sha256Hash encoded as base64 string
-    lemma: Vec<String>,
+    pub lemma: Vec<String>,
     // how to combine hashes in each proof step (left vs. right hash)
-    path: Vec<bool>
+    pub path: Vec<bool>
 }
 
 impl Sha256Hasher {
@@ -88,6 +88,22 @@ pub struct LeafInfo {
     addr: String,
     amt: String,
     memo: String
+}
+
+impl LeafInfo {
+
+    pub fn to_hash(&self) -> Sha256Hash {
+        let mut data = Vec::<LeafInfo>::new();
+        data.push(LeafInfo { 
+            addr: self.addr.to_owned(), 
+            amt: self.amt.to_owned(), 
+            memo: self.memo.to_owned() 
+        });
+        let leaf: Leaves = Leaves { data };
+        let tree = leaf.gen_tree();
+        tree.root()
+    }
+
 }
 
 pub struct Leaves {
