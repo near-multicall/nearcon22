@@ -3,7 +3,7 @@
 [package]
 name = "drop-methods-guest"
 version = "0.1.0"
-edition = "2022"
+edition = "2021"
 
 [dependencies]
 drop-core = { path = "../../core" }

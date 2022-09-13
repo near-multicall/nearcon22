@@ -15,16 +15,27 @@
 #![no_main]
 #![no_std]
 
-use risc0_zkvm_guest::{env, sha};
+use risc0_zkvm_guest::env;
 
-use battleship_core::GameState;
+use drop_core::{Leaves, ZkProofCommit};
 
 risc0_zkvm_guest::entry!(main);
 
 pub fn main() {
-    let state: GameState = env::read();
-    if !state.check() {
-        panic!("Invalid GameState");
-    }
-    env::commit(&sha::digest(&state));
+    let balances: Leaves = env::read();
+    // sum of all token allocations
+    let drop_sum: String = balances.data
+    .iter()
+    .map(|claim| claim.amt.parse::<u128>().unwrap())
+    .sum::<u128>()
+    .to_string();
+    // convert claims into a merkle tree
+    let tree: MerkleDropTree = balances.gen_tree();
+    // get merkle root in base64 encoding
+    let base64_root: String = sha256_to_base64_string( &tree.root() );
+    // commit results
+    env::commit(&ZkProofCommit {
+        base64_root_hash: &base64_root,
+        token_sum: &drop_sum
+    });
 }
