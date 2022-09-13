@@ -28,6 +28,39 @@ function makeStorageClient() {
   return new Web3Storage({ token: getAccessToken() });
 }
 
+const client = makeStorageClient();
+
+const balanceMap = (array: object[]) => {
+  const file = window.parse_balance_map(array);
+  console.log(file);
+  return file;
+};
+
+async function loadFiles(cid: string): Promise<object[]> {
+  const res = await client.get(cid); // Web3Response
+  if (res == null) console.error("something went wrong while fetching data");
+  const files = await res!.files(); // Web3File[]
+  const jsons = files.map(async f => JSON.parse(await f.text()));
+  return jsons;
+}
+
+async function storeFiles(files: File[]) {
+  const cid = await client.put(files);
+  console.log("stored files with cid:", cid);
+  return cid;
+}
+
+function makeFile(array: object[]) {
+  const blob = new Blob([JSON.stringify(balanceMap(array))], {
+    type: "application/json",
+  });
+
+  const files = [new File([blob], "merkle.json")];
+  return files;
+}
+
+window.debug = { loadFiles, storeFiles, makeFile };
+
 export default function Create() {
   const defaultValues = {
     token: "",
@@ -92,30 +125,6 @@ export default function Create() {
     console.log(array);
     console.log(array);
     setLoaded(true);
-  };
-
-  async function storeFiles(files: File[]) {
-    const client = makeStorageClient();
-    const cid = await client.put(files);
-    console.log("stored files with cid:", cid);
-    return cid;
-  }
-
-  function makeFile(array: object[]) {
-    const blob = new Blob([JSON.stringify(balanceMap(array))], {
-      type: "application/json",
-    });
-
-    const files = [new File([blob], "merkle.json")];
-    return files;
-  }
-
-  const balanceMap = (array: object[]) => {
-    console.log(array, "hi");
-    console.log(array.map((a) => ({ data: a })));
-    const file = window.parse_balance_map(array.map((a) => ({ data: a })));
-    console.log(file);
-    return file;
   };
 
   const headerKeys = ["Receivers", "Amount", "Memo"];
