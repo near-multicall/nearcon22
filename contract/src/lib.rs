@@ -4,7 +4,9 @@ use near_sdk::serde::{Deserialize, Serialize};
 use near_sdk::collections::{UnorderedMap};
 use near_sdk::{near_bindgen, AccountId, BorshStorageKey, PanicOnDefault, env, ext_contract, PromiseResult, Promise};
 use near_sdk::json_types::{U128};
-use drop_core::{LeafInfo, MerkleDropProof, Sha256Hasher};
+use drop_core::{LeafInfo, ZkProofCommit, MerkleDropProof, Sha256Hasher, sha256_to_base64_string};
+use drop_methods::{PROVEDROP_ID};
+use risc0_zkvm_verify::zkvm::{MethodID, Receipt};
 use base64ct::{ Base64, Encoding };
 use merkle_light::proof::Proof;
 use near_contract_standards::fungible_token::core_impl::ext_fungible_token;
@@ -54,7 +56,7 @@ impl Contract {
     }
 
     pub fn get_airdrop_info(&self, airdrop_id: u64) -> Airdrop {
-        return self.airdrops.get(&airdrop_id).expect("no airdrop with found!").into();
+        return self.airdrops.get(&airdrop_id).expect("no airdrop found for given ID!").into();
     }
 
     pub fn get_balance(&self, account_id: AccountId) -> Vec<(AccountId, U128)> {
@@ -63,19 +65,25 @@ impl Contract {
 
     pub fn create_new_airdrop(
         &mut self, 
-        amount: U128,
         token_id: AccountId, 
         ipfs_cid: String, 
-        root_hash: String, 
         expiry_date: u64,
-        description: String
+        description: String,
+        receipt_str: String
     ) -> u64 {
-        // validate creator has enough funds
+        // validate creator has token deposits
         let creator = env::predecessor_account_id();
         let mut token_table = self.balances.get(&creator).unwrap();
         assert!(token_table.is_some(), "creator does not have funds!");
         let balance = token_table.get(&token_id).unwrap();
         assert!(balance.is_some(), "creator did not deposit correct token!");
+
+        // parse receipt for ZK commit + proof
+        let method_id = MethodID::try_from(PROVEDROP_ID).unwrap();
+        let journal = verify_receipt(&receipt_str, &method_id);
+        let commit = risc0_zkvm_serde::from_slice::<ZkProofCommit>(&journal).unwrap();
+        let amount: U128 = U128(commit.token_sum);
+        let root_hash: String = sha256_to_base64_string(&commit.token_sum);
         assert!(balance >= amount, "creator does not have enough funds!");
         
         // reduce creators balance and give it to the airdrop
@@ -224,4 +232,11 @@ pub struct Airdrop {
     expiry_date: u64,
     claimed_users: HashSet<AccountId>,
     amount: U128
+}
+
+pub fn verify_receipt(str: &String, method_id: &MethodID) -> Vec<u32> {
+    let as_bytes = Base64::decode_vec(str).unwrap();
+    let receipt = bincode::deserialize::<Receipt>(&as_bytes).unwrap();
+    receipt.verify(&method_id).unwrap();
+    receipt.get_journal_u32()
 }

@@ -1,9 +1,7 @@
 #!/bin/bash
 
 cargo build --release
-cd ./contract
-cargo build --release
-cd ..
+cargo build --package drop-contract --release
 
 cd ./web/client/merkle
 wasm-pack build --target web --release
