@@ -111,7 +111,7 @@ export default function Deposit() {
                         size="small"
                         sx={{ marginBottom: "10px" }}
                       />
-                      <Typography sx={{paddingBottom: "10px"}}>Max. available balances:</Typography>
+                      <Typography sx={{paddingBottom: "10px"}}>Current balances:</Typography>
 
                       <Typography>
                         {formValues.token}: {tokenBalance}
