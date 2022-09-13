@@ -8,6 +8,7 @@ use drop_core::{LeafInfo, MerkleDropProof, Sha256Hasher};
 use base64ct::{ Base64, Encoding };
 use merkle_light::proof::Proof;
 use near_contract_standards::fungible_token::core_impl::ext_fungible_token;
+use near_contract_standards::fungible_token::receiver::FungibleTokenReceiver;
 
 pub const GAS_FOR_WITHDRAW: u64 = 20_000_000_000;
 pub const GAS_FOR_CLAIM: u64 = 40_000_000_000;
@@ -16,6 +17,8 @@ pub const GAS_FOR_CLAIM_CALLBACK: u64 = 10_000_000_000;
 #[derive(BorshStorageKey, BorshSerialize)]
 pub(crate) enum StorageKey {
     Airdrops,
+    AllBalances,
+    Balances {account_id: AccountId}
 }
 
 #[ext_contract(ext_self)]
@@ -31,7 +34,8 @@ pub trait DropContract {
 #[near_bindgen]
 #[derive(BorshDeserialize, BorshSerialize, PanicOnDefault)]
 pub struct Contract {
-    airdrops: UnorderedMap<u64, Airdrop>
+    airdrops: UnorderedMap<u64, Airdrop>,
+    balances: UnorderedMap<AccountId, UnorderedMap<AccountId, U128>>
 }
 
 #[near_bindgen]
@@ -41,6 +45,7 @@ impl Contract {
     pub fn new() -> Self {
         Self {
             airdrops: UnorderedMap::new(StorageKey::Airdrops),
+            balances: UnorderedMap::new(StorageKey::AllBalances)
         }
     }
 
@@ -50,6 +55,10 @@ impl Contract {
 
     pub fn get_airdrop_info(&self, airdrop_id: u64) -> Airdrop {
         return self.airdrops.get(&airdrop_id).expect("no airdrop with found!").into();
+    }
+
+    pub fn get_balance(&self, account_id: AccountId) -> Vec<(AccountId, U128)> {
+        return self.balances.get(&account_id).expect("user has no funds!").to_vec();
     }
 
     pub fn create_new_airdrop(
@@ -74,12 +83,48 @@ impl Contract {
         return key;
     }
 
+    #[allow(unreachable_code)]
+    pub fn ft_on_transfer(
+        &mut self,
+        sender_id: AccountId,
+        amount: U128,
+        msg: String,
+    ) -> U128 {
+        let token_in = env::predecessor_account_id();
+
+        let mut token_table: UnorderedMap<AccountId, U128> = UnorderedMap::new(StorageKey::Balances {account_id: sender_id.clone()});
+        if self.balances.get(&sender_id).is_some() {
+            token_table = self.balances.get(&sender_id).unwrap();
+
+            if token_table.get(&token_in).is_some() {
+                // update token amount
+                let old_token_amt: U128 = token_table.get(&token_in).unwrap();
+                let new_token_amt = U128(old_token_amt.0 + amount.0);
+                token_table.insert(&token_in, &new_token_amt);
+            } else {
+                // add token to token table
+                token_table.insert(&token_in, &amount);
+            }
+
+        } else {
+            // add user and token
+            token_table.insert(&token_in, &amount);
+        }
+
+        self.balances.insert(&sender_id, &token_table);
+        0.into()
+    }
+
     pub fn claim(&self, airdrop_id: u64, amt: String, memo: String, proof: MerkleDropProof) -> Promise {
     
         // ensure account + amount + memo hashed is in a leaf
         let user = env::predecessor_account_id();
         let hash = LeafInfo { addr: user.clone(), amt: amt.clone(), memo: memo.clone() }.to_hash();
-        assert!(Base64::encode_string(&hash).to_owned() == proof.lemma[0], "proof does not match specifications");
+        assert!(Base64::encode_string(&hash).to_owned() == proof.lemma[0], "proof incompatible with claim");
+    
+        // ensure merkle root is our merkle root
+        let mut airdrop: Airdrop = self.airdrops.get(&airdrop_id).expect("no airdrop with found!").into();
+        assert!(&airdrop.root_hash == proof.lemma.last().unwrap(), "merkel root does not match the airdrops root hash");
     
         // ensure merkle proof is valid
         let merkle_light_proof = Proof::new(
@@ -90,10 +135,6 @@ impl Contract {
             proof.path
         );
         assert!(merkle_light_proof.validate::<Sha256Hasher>(), "invalid merkle proof");
-    
-        // ensure merkle root is our merkle root
-        let mut airdrop: Airdrop = self.airdrops.get(&airdrop_id).expect("no airdrop with found!").into();
-        assert!(&airdrop.root_hash == proof.lemma.last().unwrap(), "merkel root does not match the airdrops root hash");
 
         // ensure user has not yet claimed the airdrop
         assert!(!airdrop.claimed_users.contains(&user), "user already claimed airdrop");
@@ -148,6 +189,7 @@ impl Contract {
     }
 }
 
+// TODO move claimed users into own struct
 #[derive(Serialize, Deserialize, BorshDeserialize, BorshSerialize)]
 #[serde(crate = "near_sdk::serde")]
 pub struct Airdrop {
