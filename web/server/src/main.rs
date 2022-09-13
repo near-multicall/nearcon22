@@ -21,7 +21,7 @@ use tower_http::trace::TraceLayer;
 use tower_http::cors::{CorsLayer, Any};
 use tracing_subscriber::prelude::*;
 
-use drop_core::{Leaves, ZkProofCommit};
+use drop_core::{Leaves};
 use drop_methods::{PROVEDROP_ID, PROVEDROP_PATH};
 use risc0_zkvm_host::Prover;
 
@@ -29,12 +29,6 @@ use risc0_zkvm_host::Prover;
 pub struct Receipt {
     journal: Vec<u8>,
     seal: Vec<u32>,
-}
-
-#[derive(Deserialize, Serialize)]
-pub struct TurnResult {
-    state: ZkProofCommit,
-    receipt: String,
 }
 
 #[tokio::main]
@@ -77,11 +71,14 @@ fn do_drop_proof(name: &str, input: Leaves) -> Result<String, risc0_zkvm_host::E
     let mut prover = Prover::new(&elf_contents, PROVEDROP_ID)?;
     let vec = risc0_zkvm_serde::to_vec(&input).unwrap();
     prover.add_input(vec.as_slice())?;
+    println!("hello 4");
     let receipt = prover.run()?;
+    println!("hello 5");
     let receipt = Receipt {
         journal: receipt.get_journal().unwrap().to_vec(),
         seal: receipt.get_seal().unwrap().to_vec(),
     };
+    println!("hello 6");
     Ok(base64::encode(bincode::serialize(&receipt).unwrap()))
 }
 

@@ -1,11 +1,11 @@
 {
-  "name": "drop-ui-merkle",
+  "name": "drop-merkle",
   "version": "0.1.0",
   "files": [
-    "drop_ui_merkle_bg.wasm",
-    "drop_ui_merkle.js",
-    "drop_ui_merkle.d.ts"
+    "drop_merkle_bg.wasm",
+    "drop_merkle.js",
+    "drop_merkle.d.ts"
   ],
-  "main": "drop_ui_merkle.js",
-  "types": "drop_ui_merkle.d.ts"
+  "main": "drop_merkle.js",
+  "types": "drop_merkle.d.ts"
 }

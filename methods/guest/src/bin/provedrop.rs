@@ -13,11 +13,11 @@
 // limitations under the License.
 
 #![no_main]
-#![no_std]
 
 use risc0_zkvm_guest::env;
 
 use drop_core::{Leaves, ZkProofCommit, MerkleDropTree};
+
 
 risc0_zkvm_guest::entry!(main);
 
@@ -29,10 +29,11 @@ pub fn main() {
         .map(|claim| claim.amt.parse::<u128>().unwrap())
         .sum::<u128>();
     // convert claims into a merkle tree
-    let tree: MerkleDropTree = balances.gen_tree();
+    //let tree: MerkleDropTree = balances.gen_tree();
     // commit results
-    env::commit(&ZkProofCommit {
-        base64_root_hash: tree.root(),
-        token_sum: drop_sum
-    });
+    // env::commit(&ZkProofCommit {
+    //    base64_root_hash: tree.root(),
+    //    token_sum: drop_sum
+    //});
+    env::commit(&drop_sum);
 }
