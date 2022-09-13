@@ -3,7 +3,6 @@ import { useParams } from "react-router-dom";
 import { useWalletSelector } from "../../contexts/walletSelectorContext";
 import { useLoadFiles } from "../../hooks/useLoadFiles";
 
-
 export default function ClaimPage() {
   const { id } = useParams<{ id: string }>();
   const { accountId } = useWalletSelector();
@@ -55,8 +54,12 @@ export default function ClaimPage() {
           >
             {accountId} is {valid ? "" : "not"} eligible for the airdrop
           </Typography>
-          <Button variant="contained" sx={{ textTransform: "none", width: 1 }}>
-            Claim
+          <Button
+            variant="contained"
+            disabled={!valid}
+            sx={{ textTransform: "none", width: 1 }}
+          >
+            {valid ? "Claim" : "Not Eligible"}
           </Button>
         </Box>
       </Card>
