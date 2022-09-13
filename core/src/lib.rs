@@ -128,5 +128,5 @@ impl Leaves {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ZkProofCommit {
     pub base64_root_hash: Sha256Hash,
-    pub token_sum: u128
+    pub token_sum: u32
 }

@@ -382,6 +382,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "drop-host"
+version = "0.1.0"
+dependencies = [
+ "base64",
+ "bincode",
+ "drop-core",
+ "drop-methods",
+ "risc0-zkvm-host",
+ "risc0-zkvm-serde",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "drop-methods"
 version = "0.1.0"
 dependencies = [
