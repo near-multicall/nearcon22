@@ -1,8 +1,40 @@
-import { useTheme } from "@emotion/react";
-import { Box, Button, Card, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Card,
+  FormLabel,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { useCallback, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { routes } from "../../constants/routes";
 
 export default function Claim() {
-  const theme = useTheme();
+  const navigate = useNavigate();
+  const [formValues, setFormValues] = useState({ airdropId: "" });
+
+  const handleInputChange = (e: { target: { name: any; value: any } }) => {
+    const { name, value } = e.target;
+    setFormValues({
+      ...formValues,
+      [name]: value,
+    });
+  };
+
+  const handleSubmit = useCallback(
+    (id: string) => (event: { preventDefault: () => void }) => {
+      event.preventDefault();
+      navigate(routes.airdropClaim.replace(":id", id + ""));
+    },
+    [navigate]
+  );
+  /* 
+  const handleSubmit = (event: { preventDefault: () => void }) => {
+    event.preventDefault();
+    console.log(formValues);
+  };
+ */
   return (
     <Box
       display="flex"
@@ -23,14 +55,56 @@ export default function Claim() {
           width="100%"
           padding="20px"
         >
-          <Typography sx={{ fontSize: "24px", fontWeight: "700", paddingBottom: "20px" }}>
+          <Typography
+            sx={{ fontSize: "24px", fontWeight: "700", paddingBottom: "20px" }}
+          >
             Claim your Airdrop!
           </Typography>
           <Typography
-            sx={{ fontSize: "16px", fontWeight: "500", opacity: "0.75" }}
+            sx={{
+              fontSize: "16px",
+              fontWeight: "500",
+              opacity: "0.75",
+              paddingBottom: "20px",
+            }}
           >
-            Give us the Airdrop ID
+            Just a few steps
           </Typography>
+          <form onSubmit={handleSubmit(formValues.airdropId)}>
+            <Box
+              display="flex"
+              flexDirection="column"
+              alignItems="start"
+              width="100%"
+              gap="10px"
+            >
+              <TextField
+                id="id"
+                name="airdropId"
+                type="string"
+                label="Airdrop ID"
+                value={formValues.airdropId}
+                onChange={handleInputChange}
+                size="small"
+                sx={{ marginBottom: "50px" }}
+              />
+            </Box>
+            <Box
+              sx={{ width: 1 }}
+              display="flex"
+              justifyContent="flex-end"
+              alignItems="flex-end"
+            >
+              <Button
+                variant="contained"
+                color="primary"
+                type="submit"
+                style={{ textTransform: "none" }}
+              >
+                Check Eligibility
+              </Button>
+            </Box>
+          </form>
         </Box>
       </Card>
     </Box>
