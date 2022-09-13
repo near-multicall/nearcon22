@@ -1,11 +1,12 @@
 import { Box, Button, Card, Typography } from "@mui/material";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useWalletSelector } from "../../contexts/walletSelectorContext";
 import { useLoadFiles } from "../../hooks/useLoadFiles";
 
 export default function ClaimPage() {
   const { id } = useParams<{ id: string }>();
   const { accountId } = useWalletSelector();
+  const navigate = useNavigate();
 
   const file = useLoadFiles(id);
 
@@ -54,13 +55,22 @@ export default function ClaimPage() {
           >
             {accountId} is {valid ? "" : "not"} eligible for the airdrop
           </Typography>
-          <Button
-            variant="contained"
-            disabled={!valid}
-            sx={{ textTransform: "none", width: 1 }}
-          >
-            {valid ? "Claim" : "Not Eligible"}
-          </Button>
+          {valid ? (
+            <Button
+              variant="contained"
+              sx={{ textTransform: "none", width: 1 }}
+            >
+              Claim
+            </Button>
+          ) : (
+            <Button
+              variant="contained"
+              sx={{ textTransform: "none", width: 1 }}
+              onClick={() => navigate("/claim")}
+            >
+              Go back
+            </Button>
+          )}
         </Box>
       </Card>
     </Box>
