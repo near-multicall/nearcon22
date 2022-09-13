@@ -1,21 +1,24 @@
-import { useTheme } from "@emotion/react";
 import { Box, Button, Card, Typography } from "@mui/material";
-import { useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { useWalletSelector } from "../../contexts/walletSelectorContext";
-import { useClient } from "../../hooks/useClient";
+import { useLoadFiles } from "../../hooks/useLoadFiles";
+
 
 export default function ClaimPage() {
   const { id } = useParams<{ id: string }>();
   const { accountId } = useWalletSelector();
 
-  const client = useClient();
+  const file = useLoadFiles(id);
 
-  const checkValidity = () => {
-    return true;
+  const checkEligibility = (accountId: string | null) => {
+    if (accountId! in file) {
+      return true;
+    } else {
+      return false;
+    }
   };
 
-  const valid = checkValidity();
+  const valid = checkEligibility(accountId);
 
   return (
     <Box
@@ -50,7 +53,7 @@ export default function ClaimPage() {
               paddingBottom: "50px",
             }}
           >
-            {accountId} is eligible for the airdrop
+            {accountId} is {valid ? "" : "not"} eligible for the airdrop
           </Typography>
           <Button variant="contained" sx={{ textTransform: "none", width: 1 }}>
             Claim
