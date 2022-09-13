@@ -56,23 +56,23 @@ export default function Create() {
   };
 
   const csvFileToArray = (string: string) => {
-    const csvHeader = string.slice(0, string.indexOf("\n")).split(",");
     const csvRows = string.slice(string.indexOf("\n") + 1).split("\n");
 
-    const array: {}[] = csvRows.map((i) => {
+    const array: object[] = csvRows.map((i) => {
       const values = i.split(",");
-      const obj = csvHeader.reduce((object, header, index) => {
-        (object as any)[header] = values[index];
-        return object;
-      }, {});
-      return obj;
+      return {
+        addr: values[0],
+        amt: values[1],
+        memo: values[2],
+      };
     });
 
     setArray(array);
+    console.log(array);
     setLoaded(true);
   };
 
-  const headerKeys = Object.keys(Object.assign({}, ...array));
+  const headerKeys = ["Receivers", "Amount", "Memo"];
 
   return (
     <Box
