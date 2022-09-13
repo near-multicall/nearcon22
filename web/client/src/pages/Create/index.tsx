@@ -9,10 +9,17 @@ import {
   Typography,
 } from "@mui/material";
 import { MouseEvent, useState } from "react";
-import { parse_balance_map } from "../../pkg/drop_merkle";
+import init, { parse_balance_map } from "../../pkg/drop_merkle";
+/* const rust = import("../../pkg/drop_merkle");
+
+rust
+  .then((m) => {
+    window.parse_balance_map = m.parse_balance_map;
+    console.log("our function was loaded successfully");
+  })
+  .catch(console.error); */
 
 export default function Create() {
-
   const defaultValues = {
     token: "",
     list: 0,
@@ -67,13 +74,15 @@ export default function Create() {
     });
 
     setArray(array);
+    console.log(array);
     toMerkle(array);
     console.log(array);
     setLoaded(true);
   };
 
-  const toMerkle = (array: object[]) => {
-    const file = parse_balance_map(array);
+  const toMerkle = async (array: object[]) => {
+    await init();
+    const file = window.parse_balance_map({ data: array });
     console.log(file);
     return file;
   };
