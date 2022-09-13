@@ -17,25 +17,22 @@
 
 use risc0_zkvm_guest::env;
 
-use drop_core::{Leaves, ZkProofCommit};
+use drop_core::{Leaves, ZkProofCommit, MerkleDropTree};
 
 risc0_zkvm_guest::entry!(main);
 
 pub fn main() {
     let balances: Leaves = env::read();
     // sum of all token allocations
-    let drop_sum: String = balances.data
-    .iter()
-    .map(|claim| claim.amt.parse::<u128>().unwrap())
-    .sum::<u128>()
-    .to_string();
+    let drop_sum: u128 = balances.data
+        .iter()
+        .map(|claim| claim.amt.parse::<u128>().unwrap())
+        .sum::<u128>();
     // convert claims into a merkle tree
     let tree: MerkleDropTree = balances.gen_tree();
-    // get merkle root in base64 encoding
-    let base64_root: String = sha256_to_base64_string( &tree.root() );
     // commit results
     env::commit(&ZkProofCommit {
-        base64_root_hash: &base64_root,
-        token_sum: &drop_sum
+        base64_root_hash: tree.root(),
+        token_sum: drop_sum
     });
 }

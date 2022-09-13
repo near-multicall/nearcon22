@@ -1,8 +1,9 @@
+use sha2::Digest;
 use merkle_light::merkle::{MerkleTree};
 use merkle_light_derive::Hashable;
 use serde::{Serialize, Deserialize};
 use std::hash::Hasher;
-use sha2::{Sha256};
+use sha2::Sha256;
 // use risc0_zkvm_guest::{env, sha};
 use merkle_light::hash::Algorithm;
 use merkle_light::proof::Proof;
@@ -90,9 +91,9 @@ pub fn sha256_to_base64_string (raw_hash: &Sha256Hash) -> String {
 #[derive(Serialize, Deserialize, Hashable, Debug)]
 // addr: address | amt: amount | memo: notes, like reason for airdrop
 pub struct LeafInfo {
-    addr: String,
-    amt: String,
-    memo: String
+    pub addr: String,
+    pub amt: String,
+    pub memo: String
 }
 
 impl LeafInfo {
@@ -113,12 +114,12 @@ impl LeafInfo {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Leaves {
-    data: Vec<LeafInfo>
+    pub data: Vec<LeafInfo>
 }
 
 impl Leaves {
 
-    fn gen_tree(&self) -> MerkleDropTree {
+    pub fn gen_tree(&self) -> MerkleDropTree {
         return MerkleTree::from_data(&self.data);
     }
 
@@ -126,6 +127,6 @@ impl Leaves {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ZkProofCommit {
-    base64_root_hash: String,
-    token_sum: u128
+    pub base64_root_hash: Sha256Hash,
+    pub token_sum: u128
 }

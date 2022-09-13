@@ -14,13 +14,15 @@
 
 use std::net::{Ipv4Addr, SocketAddr};
 
+use axum::http::Method;
 use axum::{http::StatusCode, response::IntoResponse, routing::post, Json, Router};
 use serde::{Deserialize, Serialize};
 use tower_http::trace::TraceLayer;
+use tower_http::cors::{CorsLayer, Any};
 use tracing_subscriber::prelude::*;
 
 use drop_core::{Leaves, ZkProofCommit};
-use drop_methods_guest::{PROVEDROP_ID, PROVEDROP_PATH};
+use drop_methods::{PROVEDROP_ID, PROVEDROP_PATH};
 use risc0_zkvm_host::Prover;
 
 #[derive(Deserialize, Serialize)]
@@ -53,9 +55,15 @@ async fn main() {
         .try_init()
         .unwrap();
 
+    let cors = CorsLayer::new()
+        .allow_methods(vec![Method::POST])
+        .allow_origin(Any)
+        .allow_headers(Any);
+
     let app = Router::new()
         .route("/prove", post(prove_drop))
-        .layer(TraceLayer::new_for_http());
+        .layer(TraceLayer::new_for_http())
+        .layer(cors);
 
     let addr = SocketAddr::from((Ipv4Addr::LOCALHOST, 3000));
     tracing::info!("listening on {}", addr);
@@ -77,7 +85,7 @@ fn do_drop_proof(name: &str, input: Leaves) -> Result<String, risc0_zkvm_host::E
     Ok(base64::encode(bincode::serialize(&receipt).unwrap()))
 }
 
-async fn prove_init(Json(payload): Json<Leaves>) -> impl IntoResponse {
+async fn prove_drop(Json(payload): Json<Leaves>) -> impl IntoResponse {
     let out = match do_drop_proof(PROVEDROP_PATH, payload) {
         Ok(receipt) => receipt,
         Err(_e) => {
