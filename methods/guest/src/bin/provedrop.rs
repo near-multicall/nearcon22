@@ -13,8 +13,18 @@
 // limitations under the License.
 
 #![no_main]
+#![no_std]
 #[macro_use]
 extern crate alloc;
+use alloc::{vec, string};
+use vec::Vec;
+use string::String;
+
+// Recommendation by pem: Actually implement String 
+//struct String {
+//    len: u16
+//    string: 
+//}
 
 use risc0_zkvm_guest::env;
 
@@ -24,23 +34,18 @@ use drop_core::{Leaves, ZkProofCommit, MerkleDropTree};
 risc0_zkvm_guest::entry!(main);
 
 pub fn main() {
-    let my_vec: Vec<u128> = vec!(1, 2, 3);
-    //eprintln!("hello from prover");
-    // let balances: Leaves = env::read();
+    let balances: Leaves = env::read();
     // sum of all token allocations
-    //let drop_sum: u128 = balances.data
-    //    .iter()
-    //    .map(|claim| claim.amt.parse::<u128>().unwrap())
-    //    .sum::<u128>();
-    let drop_sum: u128 = my_vec
+    let drop_sum: u32 = balances.data
         .iter()
-        .sum::<u128>();
+        .map(|claim| claim.amt.parse::<u32>().unwrap())
+        .sum::<u32>();
     // convert claims into a merkle tree
-    //let tree: MerkleDropTree = balances.gen_tree();
+    let tree: MerkleDropTree = balances.gen_tree();
     // commit results
-    // env::commit(&ZkProofCommit {
-    //    base64_root_hash: tree.root(),
-    //    token_sum: drop_sum
-    //});
+    env::commit(&ZkProofCommit {
+        base64_root_hash: tree.root(),
+        token_sum: drop_sum
+    });
     env::commit(&drop_sum);
 }
