@@ -5,12 +5,16 @@ import {
   Card,
   FormLabel,
   Grid,
+  InputAdornment,
   TextField,
   Typography,
 } from "@mui/material";
 import { MouseEvent, useState } from "react";
 import { Web3Storage } from "web3.storage";
 import init, { parse_balance_map } from "drop-merkle";
+import { tx } from "../../utils/wallet";
+
+const AIRDROP_CONTRACT_ADDRESS = "dev-1663082207724-65204983285265";
 /* const rust = import("../../pkg/drop_merkle");
 
 rust
@@ -64,6 +68,7 @@ window.debug = { loadFiles, storeFiles, makeFile };
 export default function Create() {
   const defaultValues = {
     token: "",
+    amount: "",
     expiry: "",
     description: "",
   };
@@ -107,6 +112,20 @@ export default function Create() {
       fileReader.readAsText(file);
     }
   };
+
+  const handleDepositTokens = () => {
+    tx(
+      formValues.token,
+      "ft_transfer_call",
+      {
+        receiver_id: AIRDROP_CONTRACT_ADDRESS,
+        amount: formValues.amount,
+        msg: ""
+      },
+      "300000000000000", // 300 Tgas
+      "1"
+    )
+  }; 
 
   const csvFileToArray = (string: string) => {
     const csvRows = string.slice(string.indexOf("\n") + 1).split("\n");
@@ -180,6 +199,23 @@ export default function Create() {
                         type="string"
                         value={formValues.token}
                         onChange={handleInputChange}
+                        size="small"
+                        sx={{ marginBottom: "10px" }}
+                      />
+                      <TextField
+                        label="Token Amount"
+                        id="token-amount"
+                        name="amount"
+                        type="string"
+                        value={formValues.amount}
+                        onChange={handleInputChange}
+                        InputProps={{
+                          endAdornment: <InputAdornment position="end">
+                            <Button className="deposit" onClick={handleDepositTokens}>
+                              Deposit
+                            </Button>
+                          </InputAdornment>,
+                        }}
                         size="small"
                         sx={{ marginBottom: "10px" }}
                       />
