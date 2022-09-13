@@ -30,13 +30,14 @@ fn main() {
     let mut prover = Prover::new(&std::fs::read(PROVEDROP_PATH).unwrap(), PROVEDROP_ID).unwrap();
     let vec = risc0_zkvm_serde::to_vec(&test_leaves).unwrap();
     prover.add_input(vec.as_slice());
-    println!("hello 4");
+    println!("running prover...");
     let receipt = prover.run().unwrap();
-    println!("hello 5");
+    println!("prover run success!");
     let receipt = Receipt {
         journal: receipt.get_journal().unwrap().to_vec(),
         seal: receipt.get_seal().unwrap().to_vec(),
     };
+    println!("zk receipt success!");
     let output_vec = prover.get_output_vec().unwrap();
     let result = risc0_zkvm_serde::from_slice::<ZkProofCommit>(output_vec.as_slice()).unwrap();
 

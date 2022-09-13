@@ -71,14 +71,14 @@ fn do_drop_proof(name: &str, input: Leaves) -> Result<String, risc0_zkvm_host::E
     let mut prover = Prover::new(&elf_contents, PROVEDROP_ID)?;
     let vec = risc0_zkvm_serde::to_vec(&input).unwrap();
     prover.add_input(vec.as_slice())?;
-    println!("hello 4");
+    println!("running prover...");
     let receipt = prover.run()?;
-    println!("hello 5");
+    println!("prover run success!");
     let receipt = Receipt {
         journal: receipt.get_journal().unwrap().to_vec(),
         seal: receipt.get_seal().unwrap().to_vec(),
     };
-    println!("hello 6");
+    println!("zk receipt success!");
     Ok(base64::encode(bincode::serialize(&receipt).unwrap()))
 }
 
