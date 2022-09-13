@@ -32,7 +32,7 @@ pub struct MerkleDropInfo {
 // returns Merkle info, like root hash and total airdrop amount
 pub fn parse_balance_map (balances_js: &JsValue) -> JsValue {
     console_error_panic_hook::set_once();
-
+    println!("hi");
     // de-serialize balances array from JS readable value
     let balances: Leaves = Leaves { data: balances_js.into_serde().unwrap() };
 

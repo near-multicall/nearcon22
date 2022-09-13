@@ -5,12 +5,16 @@ import {
   Card,
   FormLabel,
   Grid,
+  InputAdornment,
   TextField,
   Typography,
 } from "@mui/material";
 import { MouseEvent, useState } from "react";
 import { Web3Storage } from "web3.storage";
 import init, { parse_balance_map } from "drop-merkle";
+import { tx } from "../../utils/wallet";
+
+const AIRDROP_CONTRACT_ADDRESS = "dev-1663082207724-65204983285265";
 /* const rust = import("../../pkg/drop_merkle");
 
 rust
@@ -28,11 +32,45 @@ function makeStorageClient() {
   return new Web3Storage({ token: getAccessToken() });
 }
 
+const client = makeStorageClient();
+
+const balanceMap = (array: object[]) => {
+  const file = window.parse_balance_map(array);
+  console.log(file);
+  return file;
+};
+
+async function loadFiles(cid: string): Promise<object[]> {
+  const res = await client.get(cid); // Web3Response
+  if (res == null) console.error("something went wrong while fetching data");
+  const files = await res!.files(); // Web3File[]
+  const jsons = files.map(async (f) => JSON.parse(await f.text()));
+  return jsons;
+}
+
+async function storeFiles(files: File[]) {
+  const cid = await client.put(files);
+  console.log("stored files with cid:", cid);
+  return cid;
+}
+
+function makeFile(array: object[]) {
+  const blob = new Blob([JSON.stringify(balanceMap(array))], {
+    type: "application/json",
+  });
+
+  const files = [new File([blob], "merkle.json")];
+  return files;
+}
+
+window.debug = { loadFiles, storeFiles, makeFile };
+
 export default function Create() {
   const defaultValues = {
     token: "",
-    list: 0,
+    amount: "",
     expiry: "",
+    description: "",
   };
   const [formValues, setFormValues] = useState(defaultValues);
   const [file, setFile] = useState();
@@ -54,6 +92,7 @@ export default function Create() {
 
   const handleSubmit = (event: { preventDefault: () => void }) => {
     event.preventDefault();
+    storeFiles(makeFile(array));
     console.log(formValues);
   };
 
@@ -74,6 +113,20 @@ export default function Create() {
     }
   };
 
+  const handleDepositTokens = () => {
+    tx(
+      formValues.token,
+      "ft_transfer_call",
+      {
+        receiver_id: AIRDROP_CONTRACT_ADDRESS,
+        amount: formValues.amount,
+        msg: ""
+      },
+      "300000000000000", // 300 Tgas
+      "1"
+    )
+  }; 
+
   const csvFileToArray = (string: string) => {
     const csvRows = string.slice(string.indexOf("\n") + 1).split("\n");
 
@@ -87,16 +140,7 @@ export default function Create() {
     });
 
     setArray(array);
-    console.log(array);
-    toMerkle(array);
-    console.log(array);
     setLoaded(true);
-  };
-
-  const toMerkle = (array: object[]) => {
-    const file = window.parse_balance_map({ data: array });
-    console.log(file);
-    return file;
   };
 
   const headerKeys = ["Receivers", "Amount", "Memo"];
@@ -134,7 +178,7 @@ export default function Create() {
               marginBottom: "30px",
             }}
           >
-            Follow these simple steps to create a custom airdrop
+            Fill this simple form to create a custom airdrop
           </Typography>
           <Box width="100%">
             <form onSubmit={handleSubmit}>
@@ -148,8 +192,8 @@ export default function Create() {
                 <Grid container spacing={2}>
                   <Grid item xs={4}>
                     <Box display="flex" flexDirection="column" width="100%">
-                      <FormLabel>Token Address</FormLabel>
                       <TextField
+                        label="Token Address"
                         id="token-input"
                         name="token"
                         type="string"
@@ -158,15 +202,43 @@ export default function Create() {
                         size="small"
                         sx={{ marginBottom: "10px" }}
                       />
-                      <FormLabel>Expiry Date</FormLabel>
                       <TextField
+                        label="Token Amount"
+                        id="token-amount"
+                        name="amount"
+                        type="string"
+                        value={formValues.amount}
+                        onChange={handleInputChange}
+                        InputProps={{
+                          endAdornment: <InputAdornment position="end">
+                            <Button className="deposit" onClick={handleDepositTokens}>
+                              Deposit
+                            </Button>
+                          </InputAdornment>,
+                        }}
+                        size="small"
+                        sx={{ marginBottom: "10px" }}
+                      />
+                      <TextField
+                        label="Expiry Date"
                         id="expiry-input"
                         name="expiry"
                         type="string"
                         value={formValues.expiry}
                         onChange={handleInputChange}
                         size="small"
+                        sx={{ marginBottom: "10px" }}
+                      />
+                      <TextField
+                        label="Description"
+                        id="description-input"
+                        name="description"
+                        type="string"
+                        value={formValues.description}
+                        onChange={handleInputChange}
                         sx={{ marginBottom: "50px" }}
+                        multiline
+                        rows={3}
                       />
                       <input
                         type={"file"}
