@@ -6,4 +6,4 @@ cargo build --release
 cd ..
 
 cd ./web/client/merkle
-wasm-pack build --release
+wasm-pack build --target web --release

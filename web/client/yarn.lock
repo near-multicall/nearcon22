@@ -4556,7 +4556,7 @@ dotenv@^10.0.0:
   integrity sha512-rlBi9d8jpv9Sf1klPjNfFAuWDjKLwTIJJ/VxtoTwIR6hnZxcEOQCZg2oIL3MWBYw5GpUDKOEnND7LXTbIpQ03Q==
 
 drop-merkle@./merkle/pkg:
-  version "0.1.0"
+  version "0.1.1"
 
 duplexer@^0.1.2:
   version "0.1.2"
