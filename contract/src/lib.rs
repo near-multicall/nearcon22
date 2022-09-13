@@ -56,7 +56,7 @@ impl Contract {
         return key;
     }
 
-    pub fn validate_proof(amt: String, memo: String, proof: MerkleDropProof) -> bool {
+    pub fn validate_proof(&self, amt: String, memo: String, proof: MerkleDropProof) -> bool {
     
         // ensure account + amount + memo hashed is in a leaf
         let mut data = Vec::<LeafInfo>::new();
