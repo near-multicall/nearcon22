@@ -113,20 +113,6 @@ export default function Create() {
     }
   };
 
-  const handleDepositTokens = () => {
-    tx(
-      formValues.token,
-      "ft_transfer_call",
-      {
-        receiver_id: AIRDROP_CONTRACT_ADDRESS,
-        amount: formValues.amount,
-        msg: ""
-      },
-      "300000000000000", // 300 Tgas
-      "1"
-    )
-  }; 
-
   const csvFileToArray = (string: string) => {
     const csvRows = string.slice(string.indexOf("\n") + 1).split("\n");
 
@@ -209,13 +195,6 @@ export default function Create() {
                         type="string"
                         value={formValues.amount}
                         onChange={handleInputChange}
-                        InputProps={{
-                          endAdornment: <InputAdornment position="end">
-                            <Button className="deposit" onClick={handleDepositTokens}>
-                              Deposit
-                            </Button>
-                          </InputAdornment>,
-                        }}
                         size="small"
                         sx={{ marginBottom: "10px" }}
                       />
