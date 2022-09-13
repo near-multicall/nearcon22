@@ -9,15 +9,8 @@ import {
   Typography,
 } from "@mui/material";
 import { MouseEvent, useState } from "react";
-import init, { parse_balance_map } from "../../pkg/drop_merkle";
-/* const rust = import("../../pkg/drop_merkle");
+import init, { parse_balance_map } from "drop-merkle";
 
-rust
-  .then((m) => {
-    window.parse_balance_map = m.parse_balance_map;
-    console.log("our function was loaded successfully");
-  })
-  .catch(console.error); */
 
 export default function Create() {
   const defaultValues = {
@@ -30,6 +23,8 @@ export default function Create() {
   const [array, setArray] = useState([{}]);
   const [loaded, setLoaded] = useState(false);
   const fileReader = new FileReader();
+
+  init().then(res => { window.parse_balance_map = parse_balance_map });
 
   const handleInputChange = (e: { target: { name: any; value: any } }) => {
     const { name, value } = e.target;
@@ -80,8 +75,7 @@ export default function Create() {
     setLoaded(true);
   };
 
-  const toMerkle = async (array: object[]) => {
-    await init();
+  const toMerkle = (array: object[]) => {
     const file = window.parse_balance_map({ data: array });
     console.log(file);
     return file;

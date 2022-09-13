@@ -17,6 +17,7 @@ type CardCopy = {
 
 declare global {
   interface Window {
+    parse_balance_map: any;
     // Page components
     DAO: Component;
 
