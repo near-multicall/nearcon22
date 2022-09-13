@@ -40,7 +40,7 @@ async function loadFiles(cid: string): Promise<object[]> {
   const res = await client.get(cid); // Web3Response
   if (res == null) console.error("something went wrong while fetching data");
   const files = await res!.files(); // Web3File[]
-  const jsons = files.map(async f => JSON.parse(await f.text()));
+  const jsons = files.map(async (f) => JSON.parse(await f.text()));
   return jsons;
 }
 
@@ -64,8 +64,8 @@ window.debug = { loadFiles, storeFiles, makeFile };
 export default function Create() {
   const defaultValues = {
     token: "",
-    list: 0,
     expiry: "",
+    description: "",
   };
   const [formValues, setFormValues] = useState(defaultValues);
   const [file, setFile] = useState();
@@ -87,6 +87,7 @@ export default function Create() {
 
   const handleSubmit = (event: { preventDefault: () => void }) => {
     event.preventDefault();
+    storeFiles(makeFile(array));
     console.log(formValues);
   };
 
@@ -120,10 +121,6 @@ export default function Create() {
     });
 
     setArray(array);
-    console.log(makeFile(array));
-    storeFiles(makeFile(array));
-    console.log(array);
-    console.log(array);
     setLoaded(true);
   };
 
@@ -162,7 +159,7 @@ export default function Create() {
               marginBottom: "30px",
             }}
           >
-            Follow these simple steps to create a custom airdrop
+            Fill this simple form to create a custom airdrop
           </Typography>
           <Box width="100%">
             <form onSubmit={handleSubmit}>
@@ -176,8 +173,8 @@ export default function Create() {
                 <Grid container spacing={2}>
                   <Grid item xs={4}>
                     <Box display="flex" flexDirection="column" width="100%">
-                      <FormLabel>Token Address</FormLabel>
                       <TextField
+                        label="Token Address"
                         id="token-input"
                         name="token"
                         type="string"
@@ -186,15 +183,26 @@ export default function Create() {
                         size="small"
                         sx={{ marginBottom: "10px" }}
                       />
-                      <FormLabel>Expiry Date</FormLabel>
                       <TextField
+                        label="Expiry Date"
                         id="expiry-input"
                         name="expiry"
                         type="string"
                         value={formValues.expiry}
                         onChange={handleInputChange}
                         size="small"
+                        sx={{ marginBottom: "10px" }}
+                      />
+                      <TextField
+                        label="Description"
+                        id="description-input"
+                        name="description"
+                        type="string"
+                        value={formValues.description}
+                        onChange={handleInputChange}
                         sx={{ marginBottom: "50px" }}
+                        multiline
+                        rows={3}
                       />
                       <input
                         type={"file"}
