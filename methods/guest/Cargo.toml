@@ -1,0 +1,17 @@
+[workspace]
+
+[package]
+name = "drop-methods-guest"
+version = "0.1.0"
+edition = "2022"
+
+[dependencies]
+drop-core = { path = "../../core" }
+risc0-zkvm-guest = "0.10"
+
+[profile.release]
+lto = true
+opt-level = "z"
+
+[build-dependencies]
+risc0-build = "0.10"
