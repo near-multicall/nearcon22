@@ -4,6 +4,7 @@
   "files": [
     "drop_merkle_bg.wasm",
     "drop_merkle.js",
+    "drop_merkle_bg.js",
     "drop_merkle.d.ts"
   ],
   "module": "drop_merkle.js",
