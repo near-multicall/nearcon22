@@ -91,9 +91,9 @@ pub fn sha256_to_base64_string (raw_hash: &Sha256Hash) -> String {
 #[derive(Serialize, Deserialize, Hashable, Debug)]
 // addr: address | amt: amount | memo: notes, like reason for airdrop
 pub struct LeafInfo {
-    addr: String,
-    amt: String,
-    memo: String
+    pub addr: String,
+    pub amt: String,
+    pub memo: String
 }
 
 impl LeafInfo {
@@ -114,12 +114,12 @@ impl LeafInfo {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Leaves {
-    data: Vec<LeafInfo>
+    pub data: Vec<LeafInfo>
 }
 
 impl Leaves {
 
-    fn gen_tree(&self) -> MerkleDropTree {
+    pub fn gen_tree(&self) -> MerkleDropTree {
         return MerkleTree::from_data(&self.data);
     }
 

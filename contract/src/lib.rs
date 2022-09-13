@@ -3,7 +3,9 @@ use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::serde::{Deserialize, Serialize};
 use near_sdk::collections::{UnorderedMap};
 use near_sdk::{near_bindgen, AccountId, BorshStorageKey, PanicOnDefault, env};
-use drop_core::{LeafInfo, Leaves};
+use drop_core::{LeafInfo, Leaves, MerkleDropProof, Sha256Hasher};
+use base64ct::{ Base64, Encoding };
+use merkle_light::proof::Proof;
 
 #[derive(BorshStorageKey, BorshSerialize)]
 pub(crate) enum StorageKey {
@@ -65,7 +67,7 @@ impl Contract {
         let tree = leaf.gen_tree();
         let hash = tree.root();
     
-        assert(Base64::encode_string(&hash).to_owned() == proof.lemma[0], "proof does not match specifications");
+        assert!(Base64::encode_string(&hash).to_owned() == proof.lemma[0], "proof does not match specifications");
     
         // ensure merkle proof is valid
         let merkle_light_proof = Proof::new(

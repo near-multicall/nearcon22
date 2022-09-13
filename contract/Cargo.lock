@@ -196,7 +196,9 @@ dependencies = [
 name = "drop-contract"
 version = "0.1.0"
 dependencies = [
+ "base64ct",
  "drop-core",
+ "merkle_light",
  "near-sdk",
 ]
 
