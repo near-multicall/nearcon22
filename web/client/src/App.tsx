@@ -1,5 +1,5 @@
 import { theme } from "./theme";
-import { ThemeProvider, CssBaseline} from "@mui/material";
+import { ThemeProvider, CssBaseline } from "@mui/material";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Create from "./pages/Create";
 import Claim from "./pages/Claim";
@@ -8,6 +8,7 @@ import Header from "./components/Header";
 import "./utils/wallet";
 import { routes } from "./constants/routes";
 import ClaimPage from "./pages/Claim/ClaimPage";
+import Deposit from "./pages/Deposit";
 
 function App() {
   return (
@@ -19,7 +20,8 @@ function App() {
           <Route path="/" element={<Navigate to="/app" replace />} />
           <Route path={routes.app} element={<Home />} />
           <Route path={routes.create} element={<Create />} />
-          <Route path={routes.claim}element={<Claim />} />
+          <Route path={routes.claim} element={<Claim />} />
+          <Route path={routes.deposit} element={<Deposit />} />
           <Route path={routes.airdropClaim} element={<ClaimPage />} />
         </Routes>
       </>

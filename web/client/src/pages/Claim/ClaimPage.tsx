@@ -1,11 +1,21 @@
 import { useTheme } from "@emotion/react";
 import { Box, Button, Card, Typography } from "@mui/material";
+import { useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { useWalletSelector } from "../../contexts/walletSelectorContext";
+import { useClient } from "../../hooks/useClient";
 
 export default function ClaimPage() {
   const { id } = useParams<{ id: string }>();
   const { accountId } = useWalletSelector();
+
+  const client = useClient();
+
+  const checkValidity = () => {
+    return true;
+  };
+
+  const valid = checkValidity();
 
   return (
     <Box
