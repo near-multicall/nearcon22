@@ -1,5 +1,6 @@
 import { Box, Card, Grid, Typography, TextField, Button } from "@mui/material";
 import { useState } from "react";
+import { AIRDROP_CONTRACT_ADDRESS } from "../../constants/addresses";
 import { tx } from "../../utils/wallet";
 
 export default function Deposit() {
