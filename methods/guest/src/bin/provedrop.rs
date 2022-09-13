@@ -22,11 +22,15 @@ use drop_core::{Leaves, ZkProofCommit, MerkleDropTree};
 risc0_zkvm_guest::entry!(main);
 
 pub fn main() {
-    let balances: Leaves = env::read();
+    let my_vec: Vec<u128> = vec![1, 2, 3];
+    // let balances: Leaves = env::read();
     // sum of all token allocations
-    let drop_sum: u128 = balances.data
+    //let drop_sum: u128 = balances.data
+    //    .iter()
+    //    .map(|claim| claim.amt.parse::<u128>().unwrap())
+    //    .sum::<u128>();
+    let drop_sum: u128 = my_vec
         .iter()
-        .map(|claim| claim.amt.parse::<u128>().unwrap())
         .sum::<u128>();
     // convert claims into a merkle tree
     //let tree: MerkleDropTree = balances.gen_tree();
