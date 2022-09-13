@@ -48,7 +48,6 @@ export default function Home() {
           </Link>
         </Grid>
       </Grid>
-      <Card></Card>
     </Box>
   );
 }
