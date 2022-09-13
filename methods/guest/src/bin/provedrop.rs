@@ -25,9 +25,9 @@ pub fn main() {
     let balances: Leaves = env::read();
     // sum of all token allocations
     let drop_sum: u128 = balances.data
-    .iter()
-    .map(|claim| claim.amt.parse::<u128>().unwrap())
-    .sum::<u128>();
+        .iter()
+        .map(|claim| claim.amt.parse::<u128>().unwrap())
+        .sum::<u128>();
     // convert claims into a merkle tree
     let tree: MerkleDropTree = balances.gen_tree();
     // commit results
