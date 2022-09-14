@@ -1,9 +1,11 @@
 import { Box, Button, Card, Typography } from "@mui/material";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import NoData from "../../components/NoData";
+import { AIRDROP_CONTRACT_ADDRESS } from "../../constants/addresses";
 import { useWalletSelector } from "../../contexts/walletSelectorContext";
-import { useGetCid } from "../../hooks/useGetCid";
 import { useLoadFiles } from "../../hooks/useLoadFiles";
+import { tx } from "../../utils/wallet";
 
 export default function ClaimPage() {
   const { id } = useParams<{ id: string }>();
@@ -22,8 +24,23 @@ export default function ClaimPage() {
     const { amount, memo, proof } = (await file)[0].claims[accountId!];
     console.log(amount, memo, proof);
 
+    tx(
+      AIRDROP_CONTRACT_ADDRESS,
+      "claim",
+      {
+        airdrop_id: parseInt(id!),
+        amt: amount,
+        memo: memo,
+        proof: proof,
+      },
+      "300000000000000",
+      "1"
+    );
+
     // claim(id, amt, memo, proof);
   };
+
+  if (!accountId) return <NoData />;
 
   return (
     <Box
@@ -60,7 +77,7 @@ export default function ClaimPage() {
           >
             {accountId} is{" "}
             {valid ? "" : <span style={{ fontWeight: 700 }}> not </span>}
-            eligible for the airdrop
+            eligible for the airdrop {valid ? "🎉" : "😭"}
           </Typography>
           {valid ? (
             <Button
@@ -76,7 +93,6 @@ export default function ClaimPage() {
               sx={{ textTransform: "none", width: 1 }}
               onClick={() => {
                 navigate("/claim");
-                onClaim(file);
               }}
             >
               Go back

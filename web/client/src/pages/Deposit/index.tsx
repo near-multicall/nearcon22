@@ -4,6 +4,7 @@ import { AIRDROP_CONTRACT_ADDRESS } from "../../constants/addresses";
 import { useWalletSelector } from "../../contexts/walletSelectorContext";
 import { useTokenBalance } from "../../hooks/useTokenBalance";
 import { tx, view } from "../../utils/wallet";
+import NoData from "../../components/NoData";
 
 export default function Deposit() {
   const defaultValues = {
@@ -45,6 +46,8 @@ export default function Deposit() {
     });
     return Object.fromEntries(tokenBalance);
   }
+
+  if (!accountId) return <NoData />;
 
   return (
     <Box
@@ -101,10 +104,10 @@ export default function Deposit() {
                         size="small"
                         sx={{ marginBottom: "10px" }}
                       />
-                      <Typography>
-                        Current balances:
-                      </Typography>
-                      <Typography sx={{ paddingBottom: "10px", opacity: "0.75" }}>
+                      <Typography>Current balances:</Typography>
+                      <Typography
+                        sx={{ paddingBottom: "10px", opacity: "0.75" }}
+                      >
                         {formValues.token}: {tokenBalance ?? 0}
                       </Typography>
                       <TextField
