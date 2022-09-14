@@ -47,5 +47,4 @@ pub fn main() {
         root_hash: tree.root(),
         token_sum: drop_sum
     });
-    env::commit(&drop_sum);
 }
