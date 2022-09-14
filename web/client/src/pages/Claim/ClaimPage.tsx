@@ -1,24 +1,29 @@
 import { Box, Button, Card, Typography } from "@mui/material";
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useWalletSelector } from "../../contexts/walletSelectorContext";
+import { useGetCid } from "../../hooks/useGetCid";
 import { useLoadFiles } from "../../hooks/useLoadFiles";
 
 export default function ClaimPage() {
   const { id } = useParams<{ id: string }>();
   const { accountId } = useWalletSelector();
+  const [valid, setValid] = useState<boolean>();
   const navigate = useNavigate();
 
   const file = useLoadFiles(id);
 
-  const checkEligibility = (accountId: string | null) => {
-    if (accountId! in file) {
-      return true;
-    } else {
-      return false;
-    }
-  };
+  const checkEligibility = async (accountId: string | null) =>
+    (await file)[0].claims[accountId!] !== undefined;
 
-  const valid = checkEligibility(accountId);
+  checkEligibility(accountId).then((res) => setValid(res));
+
+  const onClaim = async (file: Promise<{ claims: any }[]>) => {
+    const { amount, memo, proof } = (await file)[0].claims[accountId!];
+    console.log(amount, memo, proof);
+
+    // claim(id, amt, memo, proof);
+  };
 
   return (
     <Box
@@ -53,12 +58,15 @@ export default function ClaimPage() {
               paddingBottom: "50px",
             }}
           >
-            {accountId} is {valid ? "" : "not"} eligible for the airdrop
+            {accountId} is{" "}
+            {valid ? "" : <span style={{ fontWeight: 700 }}> not </span>}
+            eligible for the airdrop
           </Typography>
           {valid ? (
             <Button
               variant="contained"
               sx={{ textTransform: "none", width: 1 }}
+              onClick={() => onClaim(file)}
             >
               Claim
             </Button>
@@ -66,7 +74,10 @@ export default function ClaimPage() {
             <Button
               variant="contained"
               sx={{ textTransform: "none", width: 1 }}
-              onClick={() => navigate("/claim")}
+              onClick={() => {
+                navigate("/claim");
+                onClaim(file);
+              }}
             >
               Go back
             </Button>

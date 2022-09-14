@@ -4,6 +4,7 @@ import { useGetCid } from "./useGetCid";
 export async function useLoadFiles(id: string | undefined) {
   const client = useClient();
   const cid = useGetCid(id);
+  console.log(cid);
 
   const res = await client.get(await cid); // Web3Response
   if (res == null) console.error("something went wrong while fetching data");
@@ -11,5 +12,6 @@ export async function useLoadFiles(id: string | undefined) {
   const jsons = await Promise.all(
     files.map(async (f) => JSON.parse(await f.text()))
   );
+  console.log(jsons);
   return jsons;
 }
