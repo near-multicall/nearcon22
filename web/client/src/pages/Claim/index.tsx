@@ -65,7 +65,7 @@ export default function Claim() {
           >
             Just a few steps
           </Typography>
-          <form onSubmit={handleSubmit(formValues.airdropId)}>
+          <form style={{width: "100%"}} onSubmit={handleSubmit(formValues.airdropId)}>
             <Box
               display="flex"
               flexDirection="column"
@@ -92,7 +92,7 @@ export default function Claim() {
             >
               <Button
                 variant="contained"
-                color="primary"
+                color="secondary"
                 type="submit"
                 style={{ textTransform: "none" }}
               >

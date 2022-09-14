@@ -128,7 +128,7 @@ export default function Deposit() {
                 >
                   <Button
                     variant="contained"
-                    color="primary"
+                    color="secondary"
                     type="submit"
                     style={{ textTransform: "none" }}
                   >
