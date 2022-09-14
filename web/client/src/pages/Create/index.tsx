@@ -154,7 +154,7 @@ export default function Create() {
       // alignContent="flex-start"
       marginBottom="auto"
       gap={{ xs: 36, md: 48 }}
-      padding="50px 50px 10px"
+      padding="50px"
     >
       <Card sx={{ width: "100%", borderRadius: "12px" }}>
         <Box

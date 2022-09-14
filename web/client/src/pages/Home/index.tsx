@@ -1,5 +1,4 @@
-import { useTheme } from "@emotion/react";
-import { Box, Card, Grid, Typography } from "@mui/material";
+import { Box, Card, Grid, Typography, useTheme } from "@mui/material";
 import { Link } from "react-router-dom";
 import { routes } from "../../constants/routes";
 
@@ -26,10 +25,27 @@ export default function Home() {
                 height: "100%",
                 borderRadius: "12px",
                 padding: "8px",
+                "&:hover": {
+                  backgroundColor: "#f0f0f0"
+                }
               }}
             >
-              <Box display="flex" flexDirection="column" alignItems="center">
-                <Typography sx={{ fontSize: "24px", fontWeight: "700" }}>
+              <Box
+                sx={{
+                  width: 1,
+                  height: 1,
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Typography
+                  sx={{
+                    textAlign: "center",
+                    fontSize: "24px",
+                    fontWeight: "700",
+                  }}
+                >
                   Create your own Airdrop
                 </Typography>
               </Box>
@@ -41,31 +57,65 @@ export default function Home() {
             <Card
               sx={{
                 width: "100%",
-                height: "300px",
+                height: "100px",
                 borderRadius: "12px",
                 padding: "8px",
+                "&:hover": {
+                  backgroundColor: "#f0f0f0"
+                }
               }}
             >
-              <Box display="flex" flexDirection="column" alignItems="center">
-                <Typography sx={{ fontSize: "24px", fontWeight: "700" }}>
+              <Box
+                sx={{
+                  width: 1,
+                  height: 1,
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Typography
+                  sx={{
+                    textAlign: "center",
+                    fontSize: "24px",
+                    fontWeight: "700",
+                  }}
+                >
                   Claim an Airdrop
                 </Typography>
               </Box>
             </Card>
           </Link>
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={6}>
           <Link to={routes.deposit} style={{ textDecoration: "none" }}>
             <Card
               sx={{
                 width: "100%",
-                height: "300px",
+                height: "100px",
                 borderRadius: "12px",
                 padding: "8px",
+                "&:hover": {
+                  backgroundColor: "#f0f0f0"
+                }
               }}
             >
-              <Box display="flex" flexDirection="column" alignItems="center">
-                <Typography sx={{ fontSize: "24px", fontWeight: "700" }}>
+              <Box
+                sx={{
+                  width: 1,
+                  height: 1,
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Typography
+                  sx={{
+                    textAlign: "center",
+                    fontSize: "24px",
+                    fontWeight: "700",
+                  }}
+                >
                   Deposit{" "}
                 </Typography>
               </Box>
