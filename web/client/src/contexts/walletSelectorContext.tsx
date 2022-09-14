@@ -8,6 +8,7 @@ import { setupNearWallet } from "@near-wallet-selector/near-wallet";
 import { setupMyNearWallet } from "@near-wallet-selector/my-near-wallet";
 import { setupSender } from "@near-wallet-selector/sender";
 import { setupMathWallet } from "@near-wallet-selector/math-wallet";
+import { AIRDROP_CONTRACT_ADDRESS } from "../constants/addresses";
 
 // import wallet icons
 const nearWalletIconUrl = new URL(
@@ -60,7 +61,7 @@ export const WalletSelectorContextProvider: React.FC<any> = ({ children }) => {
       ],
     });
     const _modal = setupModal(_selector, {
-      contractId: window.nearConfig.MULTICALL_FACTORY_ADDRESS,
+      contractId: AIRDROP_CONTRACT_ADDRESS,
       theme: "dark",
     });
     const state = _selector.store.getState();

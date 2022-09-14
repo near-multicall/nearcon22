@@ -1,0 +1,1 @@
+export const API_URL = 'https://7c46-109-49-179-93.eu.ngrok.io/prove';

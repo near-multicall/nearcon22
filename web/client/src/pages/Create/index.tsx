@@ -12,10 +12,11 @@ import {
 import { MouseEvent, useState } from "react";
 import { Web3Storage } from "web3.storage";
 import init, { parse_balance_map } from "drop-merkle";
-import { tx, view } from "../../utils/wallet";
+import { silentTx, tx, view } from "../../utils/wallet";
 import { AIRDROP_CONTRACT_ADDRESS } from "../../constants/addresses";
 import { useWalletSelector } from "../../contexts/walletSelectorContext";
 import NoData from "../../components/NoData";
+import { API_URL } from "../../constants/urls";
 
 /* const rust = import("../../pkg/drop_merkle");
 
@@ -67,6 +68,26 @@ function makeFile(array: object[]) {
 
 window.debug = { loadFiles, storeFiles, makeFile };
 
+// Example POST method implementation:
+async function postData(url = '', data = {}) {
+  console.log("data: " + JSON.stringify(data));
+  // Default options are marked with *
+  const response = await fetch(url, {
+    method: 'POST', // *GET, POST, PUT, DELETE, etc.
+    cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+    credentials: 'same-origin', // include, *same-origin, omit
+    headers: {
+      'Content-Type': 'application/json'
+      // 'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    redirect: 'follow', // manual, *follow, error
+    referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+    body: JSON.stringify(data) // body data type must match "Content-Type" header
+  });
+  console.log(response);
+  return response.text(); // parses JSON response into native JavaScript objects
+}
+
 export default function Create() {
   const defaultValues = {
     token: "",
@@ -94,10 +115,26 @@ export default function Create() {
     });
   };
 
-  const handleSubmit = (event: { preventDefault: () => void }) => {
+  const handleSubmit = async (event: { preventDefault: () => void }) => {
     event.preventDefault();
-    storeFiles(makeFile(array));
-    console.log(formValues);
+    const cid = await storeFiles(makeFile(array));
+    postData(API_URL, {data: array})
+    .then((data: string) => 
+      silentTx(
+        accountId!,
+        AIRDROP_CONTRACT_ADDRESS,
+        "create_new_airdrop",
+        {
+          token_id: formValues.token,
+          ipfs_cid: cid,
+          expiry_date: 0,
+          description: formValues.description,
+          receipt_str: data
+        },
+        "300000000000000", // 300 Tgas
+        "0"
+      )
+    );
   };
 
   const handleFileChange = (e: any) => {
