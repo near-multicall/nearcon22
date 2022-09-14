@@ -266,6 +266,17 @@ export default function Create() {
                       >
                         Import .csv
                       </Button>
+                      <Typography sx={{fontSize: "12px"}}>
+                        No CSV yet? Get an emtpy template
+                        here:{" "}
+                        <a
+                          href={"/template.csv"}
+                          download="template.csv"
+                          style={{ textDecoration: "none" }}
+                        >
+                          Download .csv template
+                        </a>
+                      </Typography>
                     </Box>
                   </Grid>
                   <Grid item xs={8}>
@@ -302,17 +313,7 @@ export default function Create() {
                             ))}
                           </tbody>
                         </table>
-                      ) : (
-                        <a
-                          href={"/template.csv"}
-                          download="template.csv"
-                          style={{ textDecoration: "none" }}
-                        >
-                          <Button variant="text" sx={{ textTransform: "none" }}>
-                            Download .csv template
-                          </Button>
-                        </a>
-                      )}
+                      ) : null}
                     </Box>
                   </Grid>
                 </Grid>
