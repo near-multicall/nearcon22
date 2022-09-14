@@ -449,6 +449,7 @@ dependencies = [
 name = "drop-contract"
 version = "0.1.0"
 dependencies = [
+ "base64",
  "base64ct",
  "bincode",
  "drop-core",

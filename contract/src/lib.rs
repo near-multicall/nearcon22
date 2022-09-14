@@ -232,7 +232,7 @@ pub struct Airdrop {
 }
 
 pub fn verify_receipt(str: &String, method_id: &MethodID) -> Vec<u32> {
-    let as_bytes = Base64::decode_vec(str).unwrap();
+    let as_bytes = base64::decode(str).unwrap();
     let receipt = bincode::deserialize::<Receipt>(&as_bytes).unwrap();
     receipt.verify(&method_id).unwrap();
     receipt.get_journal_u32()
