@@ -197,7 +197,7 @@ export default function Create() {
                         name="token"
                         type="string"
                         value={formValues.token}
-                        onChange={e => {
+                        onChange={(e) => {
                           handleInputChange(e);
                           getTokenBalance(e.target.value, accountId).then(
                             (res) => {
@@ -209,10 +209,10 @@ export default function Create() {
                         size="small"
                         sx={{ marginBottom: "10px" }}
                       />
-                      <Typography>
-                        Current balances:
-                      </Typography>
-                      <Typography sx={{ paddingBottom: "10px", opacity: "0.75" }}>
+                      <Typography>Current balances:</Typography>
+                      <Typography
+                        sx={{ paddingBottom: "10px", opacity: "0.75" }}
+                      >
                         {formValues.token}: {tokenBalance ?? 0}
                       </Typography>
                       <TextField
@@ -263,6 +263,17 @@ export default function Create() {
                       >
                         Import .csv
                       </Button>
+                      <Typography sx={{fontSize: "12px"}}>
+                        No CSV yet? Get an emtpy template
+                        here:{" "}
+                        <a
+                          href={"/template.csv"}
+                          download="template.csv"
+                          style={{ textDecoration: "none" }}
+                        >
+                          Download .csv template
+                        </a>
+                      </Typography>
                     </Box>
                   </Grid>
                   <Grid item xs={8}>
@@ -299,17 +310,7 @@ export default function Create() {
                             ))}
                           </tbody>
                         </table>
-                      ) : (
-                        <a
-                          href={"/template.csv"}
-                          download="template.csv"
-                          style={{ textDecoration: "none" }}
-                        >
-                          <Button variant="text" sx={{ textTransform: "none" }}>
-                            Download .csv template
-                          </Button>
-                        </a>
-                      )}
+                      ) : null}
                     </Box>
                   </Grid>
                 </Grid>
