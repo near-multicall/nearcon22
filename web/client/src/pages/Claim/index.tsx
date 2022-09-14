@@ -9,10 +9,14 @@ import {
 import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { routes } from "../../constants/routes";
+import { useWalletSelector } from "../../contexts/walletSelectorContext";
+import NoData from "../../components/NoData";
+
 
 export default function Claim() {
   const navigate = useNavigate();
   const [formValues, setFormValues] = useState({ airdropId: "" });
+  const { accountId } = useWalletSelector();
 
   const handleInputChange = (e: { target: { name: any; value: any } }) => {
     const { name, value } = e.target;
@@ -29,6 +33,8 @@ export default function Claim() {
     },
     [navigate]
   );
+
+  if (!accountId) return <NoData />;
 
   return (
     <Box
@@ -63,9 +69,12 @@ export default function Claim() {
               paddingBottom: "20px",
             }}
           >
-            Just a few steps
+            Just a few steps 😃
           </Typography>
-          <form style={{width: "100%"}} onSubmit={handleSubmit(formValues.airdropId)}>
+          <form
+            style={{ width: "100%" }}
+            onSubmit={handleSubmit(formValues.airdropId)}
+          >
             <Box
               display="flex"
               flexDirection="column"
