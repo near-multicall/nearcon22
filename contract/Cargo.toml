@@ -12,6 +12,7 @@ near-contract-standards = "3.1.0"
 drop-core = { path="../core" }
 drop-methods = { path = "../methods" }
 base64ct = { version = "1.0.1", features = ["alloc"] }
+base64 = "0.13"
 merkle_light = { version = "0.4.0" }
 bincode = "1.3"
 risc0-zkvm-serde = "0.10"
