@@ -18,6 +18,39 @@ const rpcProvider = new providers.JsonRpcProvider({
     url: window.nearConfig.nodeUrl,
 });
 
+async function silentTx(
+  signer: string,
+  addr: string,
+  func: string,
+  args: object | Uint8Array,
+  gas: string,
+  depo: string = "0"
+): Promise<any> {
+  // is user logged in?
+  if (!window.selector.isSignedIn()) {
+    console.error("Wallet not connected");
+    // create & return empty promise
+    return Promise.resolve();
+  }
+
+  // get wallet from wallet selector
+  const wallet = await window.selector.wallet();
+  return wallet.signAndSendTransaction({
+    signerId: signer,
+    actions: [
+      {
+        type: "FunctionCall",
+        params: {
+          methodName: func,
+          args: args,
+          gas: gas,
+          deposit: "0",
+        },
+      },
+    ],
+  });
+}
+
 async function tx(
     addr: string,
     func: string,
@@ -74,4 +107,4 @@ async function view(addr: string, func: string, args: object): Promise<any> {
     return JSON.parse(strResult);
 }
 
-export { tx, view, rpcProvider };
+export { tx, view, silentTx, rpcProvider };
