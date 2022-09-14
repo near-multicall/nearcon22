@@ -494,10 +494,10 @@ dependencies = [
  "bincode",
  "drop-core",
  "drop-methods",
+ "getrandom",
  "merkle_light",
  "near-contract-standards",
  "near-sdk",
- "risc0-zkvm-core",
  "risc0-zkvm-serde",
  "risc0-zkvm-verify",
  "serde",
@@ -650,8 +650,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4eb1a864a501629691edf6c15a593b7a51eebaa1e8468e9ddc623de7c9b58ec6"
 dependencies = [
  "cfg-if 1.0.0",
+ "js-sys",
  "libc",
  "wasi",
+ "wasm-bindgen",
 ]
 
 [[package]]
@@ -1558,16 +1560,6 @@ dependencies = [
  "cxx-build",
  "risc0-zkp-sys",
  "risc0-zkvm-platform-sys",
-]
-
-[[package]]
-name = "risc0-zkvm-core"
-version = "0.10.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ae75141a6d56ee0afe897796624aa33551400344f6bd0ac98fe87b0afacf8679"
-dependencies = [
- "cfg-if 1.0.0",
- "serde",
 ]
 
 [[package]]
