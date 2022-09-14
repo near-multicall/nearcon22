@@ -1,4 +1,3 @@
-import { useTheme } from "@emotion/react";
 import {
   Box,
   Button,
@@ -6,8 +5,17 @@ import {
   FormLabel,
   Grid,
   InputAdornment,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TablePagination,
+  TableRow,
   TextField,
   Typography,
+  useTheme,
 } from "@mui/material";
 import { MouseEvent, useState } from "react";
 import { Web3Storage } from "web3.storage";
@@ -74,6 +82,7 @@ export default function Create() {
     expiry: "",
     description: "",
   };
+  const theme = useTheme();
   const [formValues, setFormValues] = useState(defaultValues);
   const [file, setFile] = useState();
   const [array, setArray] = useState([{}]);
@@ -81,6 +90,19 @@ export default function Create() {
   const [tokenBalance, setTokenBalance] = useState("...");
   const fileReader = new FileReader();
   const { accountId } = useWalletSelector();
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setRowsPerPage(+event.target.value);
+    setPage(0);
+  };
 
   init().then((res) => {
     window.parse_balance_map = parse_balance_map;
@@ -266,9 +288,8 @@ export default function Create() {
                       >
                         Import .csv
                       </Button>
-                      <Typography sx={{fontSize: "12px"}}>
-                        No CSV yet? Get an emtpy template
-                        here:{" "}
+                      <Typography sx={{ fontSize: "12px" }}>
+                        No CSV yet? Get an emtpy template here:{" "}
                         <a
                           href={"/template.csv"}
                           download="template.csv"
@@ -285,8 +306,8 @@ export default function Create() {
                       flexDirection="column"
                       width="100%"
                       height={loaded ? "100%" : "100%"}
-                      justifyContent="center"
-                      padding="20px"
+                      justifyContent="flex-start"
+                      padding="18px"
                       sx={{
                         border: "3px solid",
                         borderColor: loaded ? "primary.main" : "secondary.main",
@@ -294,25 +315,75 @@ export default function Create() {
                       }}
                     >
                       {loaded ? (
-                        <table>
-                          <thead>
-                            <tr key={"header"}>
-                              {headerKeys.map((key) => (
-                                <th>{key}</th>
-                              ))}
-                            </tr>
-                          </thead>
-
-                          <tbody>
-                            {array.map((item, idx) => (
-                              <tr key={idx}>
-                                {Object.values(item).map((val) => (
-                                  <td>{val as string}</td>
-                                ))}
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
+                        <>
+                          <TableContainer
+                            sx={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              flexDirection: "column",
+                              height: 1,
+                            }}
+                          >
+                            <Table
+                              stickyHeader
+                              sx={{ minWidth: 650 }}
+                              size="small"
+                            >
+                              <TableHead>
+                                <TableRow key={"header"}>
+                                  {headerKeys.map((key) => (
+                                    <TableCell
+                                      sx={{
+                                        fontWeight: "bold",
+                                        padding: "3px",
+                                        backgroundColor:
+                                          theme.palette.background.paper,
+                                      }}
+                                      padding="none"
+                                    >
+                                      {key}
+                                    </TableCell>
+                                  ))}
+                                </TableRow>
+                              </TableHead>
+                              <TableBody>
+                                {array
+                                  .slice(
+                                    page * rowsPerPage,
+                                    page * rowsPerPage + rowsPerPage
+                                  )
+                                  .map((item, idx) => (
+                                    <TableRow
+                                      key={idx}
+                                      sx={{
+                                        "&:last-child td, &:last-child th": {
+                                          border: 0,
+                                        },
+                                      }}
+                                    >
+                                      {Object.values(item).map((val) => (
+                                        <TableCell
+                                          sx={{ paddingLeft: "3px" }}
+                                          padding="none"
+                                        >
+                                          {val as string}
+                                        </TableCell>
+                                      ))}
+                                    </TableRow>
+                                  ))}
+                              </TableBody>
+                            </Table>
+                            <TablePagination
+                              rowsPerPageOptions={[10, 25, 100]}
+                              component="div"
+                              count={array.length}
+                              rowsPerPage={rowsPerPage}
+                              page={page}
+                              onPageChange={handleChangePage}
+                              onRowsPerPageChange={handleChangeRowsPerPage}
+                            />
+                          </TableContainer>
+                        </>
                       ) : null}
                     </Box>
                   </Grid>
