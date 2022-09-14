@@ -42,5 +42,5 @@ fn main() {
     let result = risc0_zkvm_serde::from_slice::<ZkProofCommit>(output_vec.as_slice()).unwrap();
 
     print!("token sum: {}", &result.token_sum.to_string());
-    print!("root hash: {}", sha256_to_base64_string(&result.base64_root_hash));
+    print!("root hash: {}", sha256_to_base64_string(&result.root_hash));
 }

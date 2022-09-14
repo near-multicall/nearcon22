@@ -10,7 +10,6 @@ use risc0_zkvm_verify::zkvm::{MethodID, Receipt};
 use base64ct::{ Base64, Encoding };
 use merkle_light::proof::Proof;
 use near_contract_standards::fungible_token::core_impl::ext_fungible_token;
-use near_contract_standards::fungible_token::receiver::FungibleTokenReceiver;
 
 pub const GAS_FOR_WITHDRAW: u64 = 20_000_000_000;
 pub const GAS_FOR_CLAIM: u64 = 40_000_000_000;
@@ -73,18 +72,16 @@ impl Contract {
     ) -> u64 {
         // validate creator has token deposits
         let creator = env::predecessor_account_id();
-        let mut token_table = self.balances.get(&creator).unwrap();
-        assert!(token_table.is_some(), "creator does not have funds!");
-        let balance = token_table.get(&token_id).unwrap();
-        assert!(balance.is_some(), "creator did not deposit correct token!");
+        let mut token_table = self.balances.get(&creator).expect("creator does not have funds!");
+        let balance = token_table.get(&token_id).expect("creator did not deposit correct token!");
 
         // parse receipt for ZK commit + proof
         let method_id = MethodID::try_from(PROVEDROP_ID).unwrap();
         let journal = verify_receipt(&receipt_str, &method_id);
         let commit = risc0_zkvm_serde::from_slice::<ZkProofCommit>(&journal).unwrap();
-        let amount: U128 = U128(commit.token_sum);
-        let root_hash: String = sha256_to_base64_string(&commit.token_sum);
-        assert!(balance >= amount, "creator does not have enough funds!");
+        let amount: U128 = U128(commit.token_sum.into());
+        let root_hash: String = sha256_to_base64_string(&commit.root_hash);
+        assert!(balance.0 > amount.0, "creator does not have enough funds!");
         
         // reduce creators balance and give it to the airdrop
         let new_balance = U128(balance.0 - amount.0);
@@ -206,7 +203,7 @@ impl Contract {
         match env::promise_result(0) {
             PromiseResult::NotReady => unreachable!(),
             PromiseResult::Successful(_) => {
-                let airdrop = self.airdrops.get(&airdrop_id).unwrap();
+                let mut airdrop = self.airdrops.get(&airdrop_id).unwrap();
                 airdrop.amount = U128(airdrop.amount.0 - amount.0);
                 self.airdrops.insert(&airdrop_id, &airdrop);
                 amount

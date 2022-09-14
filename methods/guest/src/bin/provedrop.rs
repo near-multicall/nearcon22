@@ -44,7 +44,7 @@ pub fn main() {
     let tree: MerkleDropTree = balances.gen_tree();
     // commit results
     env::commit(&ZkProofCommit {
-        base64_root_hash: tree.root(),
+        root_hash: tree.root(),
         token_sum: drop_sum
     });
     env::commit(&drop_sum);
