@@ -56,7 +56,7 @@ export default function Deposit() {
       // alignContent="flex-start"
       marginBottom="auto"
       gap={{ xs: 36, md: 48 }}
-      padding="50px 50px 10px"
+      padding="50px"
     >
       <Card sx={{ width: "100%", borderRadius: "12px" }}>
         <Box
@@ -101,6 +101,12 @@ export default function Deposit() {
                         size="small"
                         sx={{ marginBottom: "10px" }}
                       />
+                      <Typography>
+                        Current balances:
+                      </Typography>
+                      <Typography sx={{ paddingBottom: "10px", opacity: "0.75" }}>
+                        {formValues.token}: {tokenBalance ?? 0}
+                      </Typography>
                       <TextField
                         label="Token Amount"
                         id="token-amount"
@@ -111,11 +117,6 @@ export default function Deposit() {
                         size="small"
                         sx={{ marginBottom: "10px" }}
                       />
-                      <Typography sx={{paddingBottom: "10px"}}>Max. available balances:</Typography>
-
-                      <Typography>
-                        {formValues.token}: {tokenBalance}
-                      </Typography>
                     </Box>
                   </Grid>
                 </Grid>

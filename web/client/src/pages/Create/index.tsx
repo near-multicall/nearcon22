@@ -12,8 +12,9 @@ import {
 import { MouseEvent, useState } from "react";
 import { Web3Storage } from "web3.storage";
 import init, { parse_balance_map } from "drop-merkle";
-import { tx } from "../../utils/wallet";
+import { tx, view } from "../../utils/wallet";
 import { AIRDROP_CONTRACT_ADDRESS } from "../../constants/addresses";
+import { useWalletSelector } from "../../contexts/walletSelectorContext";
 
 /* const rust = import("../../pkg/drop_merkle");
 
@@ -76,7 +77,9 @@ export default function Create() {
   const [file, setFile] = useState();
   const [array, setArray] = useState([{}]);
   const [loaded, setLoaded] = useState(false);
+  const [tokenBalance, setTokenBalance] = useState("...");
   const fileReader = new FileReader();
+  const { accountId } = useWalletSelector();
 
   init().then((res) => {
     window.parse_balance_map = parse_balance_map;
@@ -129,6 +132,16 @@ export default function Create() {
     setLoaded(true);
   };
 
+  async function getTokenBalance(
+    tokenId: string,
+    accountId: string | undefined | null
+  ) {
+    const tokenBalance = await view(AIRDROP_CONTRACT_ADDRESS, "get_balance", {
+      account_id: accountId,
+    });
+    return Object.fromEntries(tokenBalance);
+  }
+
   const headerKeys = ["Receivers", "Amount", "Memo"];
 
   return (
@@ -141,7 +154,7 @@ export default function Create() {
       // alignContent="flex-start"
       marginBottom="auto"
       gap={{ xs: 36, md: 48 }}
-      padding="50px 50px 10px"
+      padding="50px"
     >
       <Card sx={{ width: "100%", borderRadius: "12px" }}>
         <Box
@@ -184,10 +197,24 @@ export default function Create() {
                         name="token"
                         type="string"
                         value={formValues.token}
-                        onChange={handleInputChange}
+                        onChange={e => {
+                          handleInputChange(e);
+                          getTokenBalance(e.target.value, accountId).then(
+                            (res) => {
+                              console.log(res);
+                              setTokenBalance(res[e.target.value]);
+                            }
+                          );
+                        }}
                         size="small"
                         sx={{ marginBottom: "10px" }}
                       />
+                      <Typography>
+                        Current balances:
+                      </Typography>
+                      <Typography sx={{ paddingBottom: "10px", opacity: "0.75" }}>
+                        {formValues.token}: {tokenBalance ?? 0}
+                      </Typography>
                       <TextField
                         label="Token Amount"
                         id="token-amount"

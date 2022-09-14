@@ -8,6 +8,7 @@ import { useTheme } from "@mui/material";
 import { useWalletSelector } from "../../contexts/walletSelectorContext";
 import { routes } from "../../constants/routes";
 import { Link, Navigate, useNavigate } from "react-router-dom";
+import "../../main.css";
 
 export default function Header() {
   const navigate = useNavigate();
@@ -41,8 +42,8 @@ export default function Header() {
               navigate(routes.app);
             }}
           ></IconButton>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1, cursor: "pointer" }} onClick={() => navigate("/")}>
-            NoCap
+          <Typography variant="h4" component="div" sx={{ py: 2, flexGrow: 1, cursor: "pointer", fontFamily: `"Nabla", cursive` }} onClick={() => navigate("/")}>
+            no_cap_drop
           </Typography>
           {!selector.isSignedIn() ? (
             <Button
