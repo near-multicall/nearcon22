@@ -1,7 +1,6 @@
 [workspace]
 members = [
   "core",
-  "host",
   "methods",
   "web/server",
 ]
